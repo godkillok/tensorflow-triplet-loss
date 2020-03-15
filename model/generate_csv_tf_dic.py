@@ -141,7 +141,7 @@ def write_tfrecords(tf_lines, path_text, count):
 
 
 def main():
-    vocab_dict, label_dict= ini(FLAGS.path_vocab,FLAGS.path_label)
+    vocab_dict, label_dict= ini(FLAGS.path_vocab,FLAGS.path_label,pad_word,OOV)
     generate_tf_dic(os.path.join(FLAGS.data_dir, 'tag_space'),vocab_dict,label_dict)
     # generate_tf_dic(os.path.join(FLAGS.data_dir, 'tag_space2'),vocab_dict,label_dict)
     # generate_tf_dic(os.path.join(FLAGS.data_dir, 'txt_valid'), vocab_dict,label_dict)
