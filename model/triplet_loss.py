@@ -57,12 +57,13 @@ def _get_anchor_positive_triplet_mask(labels):
         mask: tf.bool `Tensor` with shape [batch_size, batch_size]
     """
     # Check that i and j are distinct
-    indices_equal = tf.cast(tf.eye(tf.shape(labels)[0]), tf.bool)
-    indices_not_equal = tf.logical_not(indices_equal)
+    #indices_equal = tf.cast(tf.eye(tf.shape(labels)[0]), tf.bool)
+    #indices_not_equal = tf.logical_not(indices_equal)
 
     # Check if labels[i] == labels[j]
     # Uses broadcasting where the 1st argument has shape (1, batch_size) and the 2nd (batch_size, 1)
     labels_equal = tf.equal(tf.expand_dims(labels, 0), tf.expand_dims(labels, 1))
+    # tgp: only on condition axis=0 equal to 1 which is
 
     # Combine the two masks
     #mask = tf.logical_and(indices_not_equal, labels_equal)
@@ -168,7 +169,7 @@ def batch_all_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fal
     # Get final mean triplet loss over the positive valid triplets
     triplet_loss = tf.reduce_sum(triplet_loss) / (num_positive_triplets + 1e-16)
 
-    return triplet_loss, fraction_positive_triplets
+    return triplet_loss, fraction_positive_triplets,num_positive_triplets
 
 
 def batch_hard_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=False):

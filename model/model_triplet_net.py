@@ -21,6 +21,7 @@ def random_label(labels_lists):
     return result
 
 def random_tag(labels_lists,tags_list):
+    print("tags_list {}".format(tags_list))
     labels=random_label(labels_lists)
     rows = tf.shape(labels_lists)[0]
     result=tf.gather_nd(tags_list, tf.stack([tf.range(rows), labels], axis=1))
@@ -63,8 +64,11 @@ def assign_pretrained_word_embedding(params):
     return word_embedding_final
 
 def cnn(sentence,embeddings,num_filters,filter_sizes,sentence_max_len):
+    print("sentence.shape[2] {}".format(sentence.shape))
     sentence = tf.nn.embedding_lookup(embeddings, sentence)
+    sentence = tf.expand_dims(sentence, -1)
     pooled_outputs = []
+    print("sentence.shape[2] {}".format(sentence.shape))
     filter_len=sentence.shape[2]
     for filter_size in filter_sizes:
 
@@ -109,7 +113,7 @@ def cnn(sentence,embeddings,num_filters,filter_sizes,sentence_max_len):
 
 def  get_tag_embedding(labels_lists,y_tower,word_embedding):
     tags,labels=random_tag(labels_lists,y_tower)
-
+    print("tag {}".format(tags.shape))
     num_filters=3
     filter_sizes=[2,3,4]
     sentence_max_len=10
@@ -117,14 +121,14 @@ def  get_tag_embedding(labels_lists,y_tower,word_embedding):
     return tag_logit,labels
 
 def get_txt_embedding(x_tower,word_embedding):
-    sentence_max_len=100
+    sentence_max_len=60
     num_filters=3
     filter_sizes=[2,3,4,5,7]
     # sentence_max_len=10
     sentence_logit=cnn(x_tower, word_embedding, num_filters, filter_sizes, sentence_max_len)
     return sentence_logit
 
-def model_fn(features,labels_lists, mode):
+def model_fn(features, mode,params):
     vocab_size=2000
     embedding_size=100
     word_embedding = tf.get_variable(name="embeddings", dtype=tf.float32,
@@ -132,26 +136,34 @@ def model_fn(features,labels_lists, mode):
                                  initializer=tf.truncated_normal_initializer(stddev=0.02))
 
     y_tower=features["tags"]
-    # labels_lists=features["labels"]
+    y_tower=tf.reshape(y_tower,[-1,12,10])
+    labels_lists=features["labels"]
     x_tower=features["text"]
     tag_logit,labels= get_tag_embedding(labels_lists,y_tower,word_embedding)
     sentence_logit=get_txt_embedding(x_tower, word_embedding)
-    # embedding_mean_norm = tf.reduce_mean(tf.norm(embeddings, axis=1))
-    # tf.summary.scalar("embedding_mean_norm", embedding_mean_norm)
+
+    embedding_mean_norm = tf.reduce_mean(tf.norm(sentence_logit, axis=1))
+    tf.summary.scalar("embedding_mean_norm", embedding_mean_norm)
+    eval_metric_ops = {"embedding_mean_norm": tf.metrics.mean(embedding_mean_norm)}
 
     if mode == tf.estimator.ModeKeys.PREDICT:
-        predictions = {'embeddings': sentence_logit}
+        predictions = {'sentence_logit': sentence_logit,"tag_logit":tag_logit,"labels":labels}
         return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
 
     labels = tf.cast(labels, tf.int64)  # Tensor("Cast:0", shape=(?,), dtype=int64)
-
+    triplet_strategy = "batch_hard"
     # Define triplet loss
-    # if params.triplet_strategy == "batch_all":
-    loss, fraction = batch_all_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
-                                            squared=False)
-    # elif params.triplet_strategy == "batch_hard":
-    #     loss = batch_hard_triplet_loss(labels, embeddings, margin=params.margin,
-    #                                    squared=params.squared)
+    if triplet_strategy == "batch_all":
+        loss, fraction,num_positive_triplets = batch_all_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
+                                                squared=False)
+
+
+        tf.summary.scalar('loss1', num_positive_triplets)
+        tf.summary.scalar('fraction_positive_triplets', fraction)
+
+    else : #triplet_strategy == "batch_hard"
+        loss = batch_hard_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
+                                       squared=False)
     # else:
     #     raise ValueError("Triplet strategy not recognized: {}".format(params.triplet_strategy))
 
@@ -162,14 +174,14 @@ def model_fn(features,labels_lists, mode):
     # with tf.variable_scope("metrics"):
     #     eval_metric_ops = {"embedding_mean_norm": tf.metrics.mean(embedding_mean_norm)}
 
-    eval_metric_ops = {"embedding_mean_norm":  tf.metrics.mean(fraction)}
 
     if mode == tf.estimator.ModeKeys.EVAL:
         return tf.estimator.EstimatorSpec(mode, loss=loss, eval_metric_ops=eval_metric_ops)
 
     # Summaries for training
     tf.summary.scalar('loss', loss)
-    tf.summary.scalar('fraction_positive_triplets', fraction)
+
+
 
     # tf.summary.image('train_image', images, max_outputs=1)
 
