@@ -54,6 +54,7 @@ def parse_line_dict(record,vocab_dict,label_dict):
     tokens,labels=per_line(record)
     text = [vocab_dict.get(r,OOV) for r in tokens]
     labels=[label_dict[lab] for lab in labels]
+    labels=labels[:12]
     tags=[]
     for lab in labels:
         tag=[]
