@@ -50,27 +50,18 @@ def feature_auto(value):
         return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
 
 
-def parse_line_dict(record,vocab_dict,author_dict,label_dict,categories_dict):
-    tokens=per_line(record)
-    tokens=tokens.split()
+def parse_line_dict(record,vocab_dict,label_dict):
+    tokens,labels=per_line(record)
     text = [vocab_dict.get(r,OOV) for r in tokens]
-    record=json.loads(record)
-    label=record.get("label")
-    author=record.get("source_user")
-    try:
-        categories =record.get("categories", ["no"])[0].lower()
-    except:
-        categories ="no"
-    try:
-        au=author_dict.get(author)
-        if au is None:
-            au=author_dict.get('{}_{}'.format(label,categories))
-        if au is None:
-            au = len(author_dict)
-    except:
-        au=len(author_dict)
+    labels=[label_dict[lab] for lab in labels]
+    tags=[]
+    for lab in labels:
+        tag=[]
+        for la in lab:
+            tag.append(vocab_dict.get(la,OOV))
+        tags.append(tag)
 
-    return [text, label_dict.get(label),au,categories_dict.get(categories,len(categories))]
+    return [text,labels,tags]
 
 
 def per_thouds_lines_dict(result_lines, path_text, count,flag_name=''):
@@ -80,13 +71,19 @@ def per_thouds_lines_dict(result_lines, path_text, count,flag_name=''):
     for rl_num,rl in enumerate(result_lines):
         text=rl[0]
         label=rl[1]
-        author=rl[2]
-        categories=rl[3]
+        tags=rl[2]
         if len(text) >= sentence_max_len:
             text = text[0: sentence_max_len]
         else:
             text += [pad_word] * (sentence_max_len - len(text))
-        g={"text":text,"label":label,"author":author,"categories":categories}
+        tags_=[]
+        for tag in tags:
+            if len(tag) >= 10:
+                tag = tag[0: 10]
+            else:
+                tag += [pad_word] * (10 - len(tag))
+            tags_+=tag
+        g={"text":text,"labels":label,"tags":tags_}
         tf_lines.append(g)
         # if rl_num>1 and rl_num%10000==0:
         #     flag_name=str(rl_num)
@@ -109,39 +106,13 @@ def ini():
         OOV=vocab_dict.get(OOV)
         print("pad_word {},OOV {}".format(pad_word,OOV))
 
-
     with open(FLAGS.path_label, 'r', encoding='utf8') as f:
         lines = f.readlines()
         label_dict = {l.strip().split("\x01\t")[0]: i for i, l in enumerate(lines)}
 
-    with open(FLAGS.path_label, 'r', encoding='utf8') as f:
-        lines = f.readlines()
-        categories_dict = {l.strip().split("\x01\t")[0]: i for i, l in enumerate(lines)}
+    return vocab_dict,label_dict
 
-    with open(FLAGS.path_author, 'r', encoding='utf8') as f:
-        lines = f.readlines()
-        i=0
-        author_dict={}
-        for  l in lines:
-            if int(l.strip().split("\x01\t")[1]) > 10:
-                author_dict[l.strip().split("\x01\t")[0]]=i
-                i+=1
-
-    print("before new is {} all is {}".format(len(author_dict),len(lines)))
-    with open(FLAGS.path_author, 'a', encoding='utf8') as f:
-        for la in label_dict.keys():
-            for ca in categories_dict.keys():
-                new_au='{}_{}'.format(la, ca)
-                if new_au not in author_dict:
-                    f.writelines('{}\x01\t{}\n'.format(new_au,100))
-                    author_dict[new_au]=len(author_dict)
-                else:
-                    print((new_au,author_dict[new_au]))
-    print("after is {}".format(len(author_dict)))
-
-    return vocab_dict,author_dict,label_dict,categories_dict
-
-def generate_tf_dic(path_text,vocab_dict,author_dict,label_dict,categories_dict):
+def generate_tf_dic(path_text,vocab_dict,label_dict):
 
 
     result_lines = []
@@ -151,7 +122,7 @@ def generate_tf_dic(path_text,vocab_dict,author_dict,label_dict,categories_dict)
         random.shuffle(lines)
         for line in lines:
             count+=1
-            result_lines.append(parse_line_dict(line,vocab_dict,author_dict,label_dict,categories_dict))
+            result_lines.append(parse_line_dict(line,vocab_dict,label_dict))
             if count>0 and count % 50000 == 0:
                 print(count)
                 per_thouds_lines_dict(result_lines, path_text, count)
@@ -174,15 +145,15 @@ def write_tfrecords(tf_lines, path_text, count):
     for i,data in enumerate(tf_lines):
         if i==0:
             print("Start to convert {}".format(data))
+
+        #{"text":text,"labels":label,"tags":tags_}
         text = data["text"]
-        label = data["label"]
-        author=data["author"]
-        categories=data["categories"]
+        labels = data["labels"]
+        tags=data["tags"]
         example = tf.train.Example(features=tf.train.Features(feature={
             'text': feature_auto(list(text)),
-            'label': feature_auto(int(label)),
-            'author': feature_auto(int(author)),
-            "categories": feature_auto(int(categories)),
+            'labels': feature_auto(list(labels)),
+            'tags': feature_auto(int(tags))
         }))
 
         writer.write(example.SerializeToString())
@@ -194,10 +165,10 @@ def write_tfrecords(tf_lines, path_text, count):
 
 
 def main():
-    vocab_dict, author_dict, label_dict, categories_dict= ini()
-    generate_tf_dic(os.path.join(FLAGS.data_dir, 'txt_train'),vocab_dict,author_dict,label_dict,categories_dict)
-    generate_tf_dic(os.path.join(FLAGS.data_dir, 'txt_golden'),vocab_dict,author_dict,label_dict,categories_dict)
-    generate_tf_dic(os.path.join(FLAGS.data_dir, 'txt_valid'), vocab_dict, author_dict, label_dict, categories_dict)
+    vocab_dict, label_dict= ini()
+    generate_tf_dic(os.path.join(FLAGS.data_dir, 'txt_train'),vocab_dict,label_dict)
+    generate_tf_dic(os.path.join(FLAGS.data_dir, 'txt_golden'),vocab_dict,label_dict)
+    generate_tf_dic(os.path.join(FLAGS.data_dir, 'txt_valid'), vocab_dict,label_dict)
     # s3_input = FLAGS.data_dir
     # for root, dirs, files in os.walk(s3_input):
     #     for file in files:
