@@ -38,8 +38,8 @@ def per_line(line):
 
 def parse_line_dict(tokens,labels,vocab_dict,label_dict,OOV):
 
-    print(tokens)
-    print(labels)
+    # print(tokens)
+    # print(labels)
     text = [vocab_dict.get(r,OOV) for r in tokens]
     # labels=labels[:12]
     if len(labels) >= 12:
@@ -55,7 +55,7 @@ def parse_line_dict(tokens,labels,vocab_dict,label_dict,OOV):
             tag.append(vocab_dict.get(la,0))
         tags.append(tag)
     labels=[label_dict.get(lab,-1) for lab in labels]
-    print([text,labels,tags])
+    # print([text,labels,tags])
     return [text,labels,tags]
 
 
