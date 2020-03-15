@@ -57,14 +57,14 @@ def parse_line_dict(record,vocab_dict,label_dict):
     if len(labels) >= 12:
         labels = labels[0: 12]
     else:
-        labels += ['-1'] * (12 - len(labels))
+        labels += ['-111'] * (12 - len(labels))
     tags=[]
     for lab in labels:
         tag=[]
         for la in lab.split(' '):
             # if la not in vocab_dict:
             #     print("'{}' not exist".format(la))
-            tag.append(vocab_dict.get(la,OOV))
+            tag.append(vocab_dict.get(la,0))
         tags.append(tag)
     labels=[label_dict.get(lab,-1) for lab in labels]
     print([text,labels,tags])
