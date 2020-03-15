@@ -59,9 +59,7 @@ def parse_line_dict(tokens,labels,vocab_dict,label_dict,OOV):
     return [text,labels,tags]
 
 
-def ini(path_vocab,path_label):
-    global pad_word,OOV
-
+def ini(path_vocab,path_label,pad_word,OOV):
     with open(path_vocab, 'r', encoding='utf8') as f:
         lines = f.readlines()
         vocab_dict = {l.strip(): (i) for i, l in enumerate(lines)}
