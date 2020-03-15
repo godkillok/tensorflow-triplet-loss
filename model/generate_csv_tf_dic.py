@@ -57,7 +57,7 @@ def parse_line_dict(record,vocab_dict,label_dict):
     tags=[]
     for lab in labels:
         tag=[]
-        for la in lab:
+        for la in lab.split():
             tag.append(vocab_dict.get(la,OOV))
         tags.append(tag)
     labels=[label_dict[lab] for lab in labels]
