@@ -50,6 +50,8 @@ def feature_auto(value):
 
 def parse_line_dict(record,vocab_dict,label_dict):
     tokens,labels=per_line(record)
+    print(tokens)
+    print(labels)
     text = [vocab_dict.get(r,OOV) for r in tokens]
     labels=labels[:12]
     tags=[]
@@ -59,6 +61,7 @@ def parse_line_dict(record,vocab_dict,label_dict):
             tag.append(vocab_dict.get(la,OOV))
         tags.append(tag)
     labels=[label_dict[lab] for lab in labels]
+    print([text,labels,tags])
     return [text,labels,tags]
 
 
