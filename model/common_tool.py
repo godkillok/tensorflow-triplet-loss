@@ -58,6 +58,23 @@ def parse_line_dict(tokens,labels,vocab_dict,label_dict,OOV):
     # print([text,labels,tags])
     return [text,labels,tags]
 
+def line_para(rl):
+    text = rl[0]
+    label = rl[1]
+    tags = rl[2]
+    if len(text) >= sentence_max_len:
+        text = text[0: sentence_max_len]
+    else:
+        text += [pad_word] * (sentence_max_len - len(text))
+    tags_ = []
+    for tag in tags:
+        if len(tag) >= 10:
+            tag = tag[0: 10]
+        else:
+            tag += [pad_word] * (10 - len(tag))
+        tags_ += tag
+    g = {"text": text, "labels": label, "tags": tags_}
+    return g
 
 def ini(path_vocab,path_label,pad_word,OOV):
     with open(path_vocab, 'r', encoding='utf8') as f:

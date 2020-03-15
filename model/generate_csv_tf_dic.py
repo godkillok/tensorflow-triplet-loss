@@ -8,7 +8,7 @@ import random
 import random
 import json
 import time
-from common_tool import per_line,parse_line_dict,ini
+from common_tool import per_line,parse_line_dict,ini,line_para
 flags = tf.app.flags
 flags.DEFINE_string("data_dir", "/data/tanggp/tmp/Starspace/python/test/", "Directory containing the dataset")
 flags.DEFINE_string("pad_word", '0', "used for pad sentence")
@@ -55,21 +55,7 @@ def per_thouds_lines_dict(result_lines, path_text, count,pad_word,flag_name=''):
 
 
     for rl_num,rl in enumerate(result_lines):
-        text=rl[0]
-        label=rl[1]
-        tags=rl[2]
-        if len(text) >= sentence_max_len:
-            text = text[0: sentence_max_len]
-        else:
-            text += [pad_word] * (sentence_max_len - len(text))
-        tags_=[]
-        for tag in tags:
-            if len(tag) >= 10:
-                tag = tag[0: 10]
-            else:
-                tag += [pad_word] * (10 - len(tag))
-            tags_+=tag
-        g={"text":text,"labels":label,"tags":tags_}
+        g=line_para(rl)
         tf_lines.append(g)
         # if rl_num>1 and rl_num%10000==0:
         #     flag_name=str(rl_num)
