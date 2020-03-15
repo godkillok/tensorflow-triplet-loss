@@ -113,7 +113,7 @@ if __name__ == '__main__':
     # Save datasets properties in json file
     sizes = {
         'train_size': size_train_sentences,
-        'test_size': size_test_sentences,
+        'test_size': 0,
         'vocab_size': len(words_),
         'pad_word': PAD_WORD,
         'num_oov_buckets': NUM_OOV_BUCKETS
