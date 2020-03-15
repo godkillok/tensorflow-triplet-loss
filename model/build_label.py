@@ -55,7 +55,6 @@ def update_label(txt_path, labels):
     Returns:
         dataset_size: (int) number of elements in the dataset
     """
-    labels = []
     with open(txt_path, "r", encoding="utf8") as f:
         for i, line in enumerate(f):
             li = line.strip()
