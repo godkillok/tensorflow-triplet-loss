@@ -124,7 +124,7 @@ def get_txt_embedding(x_tower,word_embedding):
     sentence_logit=cnn(x_tower, word_embedding, num_filters, filter_sizes, sentence_max_len)
     return sentence_logit
 
-def model_fn(features, mode):
+def model_fn(features,labels_lists, mode):
     vocab_size=2000
     embedding_size=100
     word_embedding = tf.get_variable(name="embeddings", dtype=tf.float32,
@@ -132,8 +132,8 @@ def model_fn(features, mode):
                                  initializer=tf.truncated_normal_initializer(stddev=0.02))
 
     y_tower=features["tags"]
-    labels_lists=features["labels"]
-    x_tower=features["sentence"]
+    # labels_lists=features["labels"]
+    x_tower=features["text"]
     tag_logit,labels= get_tag_embedding(labels_lists,y_tower,word_embedding)
     sentence_logit=get_txt_embedding(x_tower, word_embedding)
     # embedding_mean_norm = tf.reduce_mean(tf.norm(embeddings, axis=1))
