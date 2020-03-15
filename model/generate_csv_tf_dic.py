@@ -8,7 +8,7 @@ import random
 import random
 import json
 import time
-from common_tool import per_line
+from common_tool import per_line,parse_line_dict
 flags = tf.app.flags
 flags.DEFINE_string("data_dir", "/data/tanggp/tmp/Starspace/python/test/", "Directory containing the dataset")
 flags.DEFINE_string("pad_word", '0', "used for pad sentence")
@@ -82,6 +82,11 @@ def per_thouds_lines_dict(result_lines, path_text, count,flag_name=''):
         write_tfrecords(tf_lines, path_text, count)
             # tf_lines=[]
 
+def  parse_line_dict2(line,vocab_dict,label_dict):
+    tokens, labels=per_line(line)
+    return parse_line_dict(tokens,labels,vocab_dict,label_dict,OOV)
+
+
 
 def generate_tf_dic(path_text,vocab_dict,label_dict):
 
@@ -93,7 +98,7 @@ def generate_tf_dic(path_text,vocab_dict,label_dict):
         random.shuffle(lines)
         for line in lines:
             count+=1
-            result_lines.append(parse_line_dict(line,vocab_dict,label_dict))
+            result_lines.append(parse_line_dict2(line,vocab_dict,label_dict))
             if count>0 and count % 50000 == 0:
                 print(count)
                 per_thouds_lines_dict(result_lines, path_text, count)
