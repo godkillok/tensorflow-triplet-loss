@@ -64,11 +64,11 @@ def assign_pretrained_word_embedding(params):
     return word_embedding_final
 
 def cnn(sentence,embeddings,num_filters,filter_sizes,sentence_max_len):
-    print("sentence.shape[2] {}".format(sentence.shape))
+    #print("sentence.shape[2] {}".format(sentence.shape))
     sentence = tf.nn.embedding_lookup(embeddings, sentence)
     sentence = tf.expand_dims(sentence, -1)
     pooled_outputs = []
-    print("sentence.shape[2] {}".format(sentence.shape))
+    #print("sentence.shape[2] {}".format(sentence.shape))
     filter_len=sentence.shape[2]
     for filter_size in filter_sizes:
 
