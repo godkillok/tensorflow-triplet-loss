@@ -107,7 +107,7 @@ def ini():
         vocab_dict = {l.strip(): (i) for i, l in enumerate(lines)}
         pad_word=vocab_dict.get(pad_word)
         OOV=vocab_dict.get(OOV)
-        print("pad_word {},OOV {}".format(pad_word,OOV))
+        print("pad_word {},OOV {} --vocab_dict {}".format(pad_word,OOV,len(vocab_dict)))
 
     with open(FLAGS.path_label, 'r', encoding='utf8') as f:
         lines = f.readlines()
