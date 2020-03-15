@@ -62,6 +62,7 @@ def line_para(rl):
     text = rl[0]
     label = rl[1]
     tags = rl[2]
+    sentence_max_len=60
     if len(text) >= sentence_max_len:
         text = text[0: sentence_max_len]
     else:
