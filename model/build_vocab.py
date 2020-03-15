@@ -7,7 +7,7 @@ import re
 from common_tool import per_line
 parser = argparse.ArgumentParser()
 parser.add_argument('--min_count_word', default=20, help="Minimum count for words in the dataset", type=int)
-parser.add_argument('--data_dir', default='/data/tanggp/youtube8m', help="Directory containing the dataset")
+parser.add_argument('--data_dir', default='/data/tanggp/tmp/Starspace/python/test/', help="Directory containing the dataset")
 
 # Hyper parameters for the vocab
 NUM_OOV_BUCKETS = 1 # number of buckets (= number of ids) for unknown words
@@ -45,14 +45,22 @@ def update_vocab(txt_path, vocab,word_lenth):
     Returns:
         dataset_size: (int) number of elements in the dataset
     """
+    punctuation = r"""!"#$%&()*+,-./:;<=>?@[\]^_`{|}~。，"""
     with open(txt_path, "r", encoding="utf8") as f:
         for i, line in enumerate(f):
-            text=per_line(line)
-            tokens = text.split()
-            tokens = [w.strip("'") for w in tokens if len(w.strip("'")) > 0 and not w.isdigit()]
+            text = line.split("__label__")[0].strip()
+            text = re.sub(r'[{}]+'.format(punctuation), ' ', str(text))
+            text = ' '.join(text.split())
+            text = re.sub(
+                '[.com\u200b\001\002\003\004\005\006\007\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a]+',
+                '', text)
+            #         print(str)
+            tokens = text.lower()
+            # print(tokens)
+            tokens = tokens.split()
+            tokens = [w.strip() for w in tokens if len(w.strip()) > 0 and not w.isdigit()]
             vocab.update(tokens)
-            word_lenth.append(len(tokens))
-    return i + 1
+        return i+1
 
 
 if __name__ == '__main__':
@@ -62,20 +70,20 @@ if __name__ == '__main__':
     print("Building word vocabulary...")
     words = Counter()
     word_lenth=[]
-    size_train_sentences = update_vocab(os.path.join(args.data_dir, 'txt_train'), words,word_lenth)
-    size_test_sentences = update_vocab(os.path.join(args.data_dir, 'txt_golden'), words,word_lenth)
-    size_test_sentences = update_vocab(os.path.join(args.data_dir, 'txt_valid'), words, word_lenth)
+    size_train_sentences = update_vocab(os.path.join(args.data_dir, 'tag_space2'), words,word_lenth)
+    size_test_sentences = update_vocab(os.path.join(args.data_dir, 'tag_space2'), words,word_lenth)
+    # size_test_sentences = update_vocab(os.path.join(args.data_dir, 'txt_valid'), words, word_lenth)
     print("- done.")
-    word_lenth_count=Counter(word_lenth)
-    for i in word_lenth_count.items():
-        print(i)
+    # word_lenth_count=Counter(word_lenth)
+    # for i in word_lenth_count.items():
+    #     print(i)
 
     print('most common 100 {}'.format(words.most_common(100)))
     print('before remove {}'.format(len(words.keys())))
     # Only keep most frequent tokens
     max_word=max(words.values())
-    words_=[PAD_WORD,'-1v']
-    words_ += [tok for tok, count in words.items() if count >= args.min_count_word and count<0.95*max_word and tok not in {PAD_WORD,'-1v'}]
+    words_=[PAD_WORD,'unknown']
+    words_ += [tok for tok, count in words.items() if count >= args.min_count_word and count<1.1*max_word and tok not in {PAD_WORD,'unknown'}]
     print('after remove {}'.format(len(words_)))
     # Add pad tokens
     #if PAD_WORD not in words: words.append(PAD_WORD)
