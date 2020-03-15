@@ -6,7 +6,7 @@ import os
 import re
 from common_tool import per_line
 parser = argparse.ArgumentParser()
-parser.add_argument('--min_count_word', default=20, help="Minimum count for words in the dataset", type=int)
+parser.add_argument('--min_count_word', default=0, help="Minimum count for words in the dataset", type=int)
 parser.add_argument('--data_dir', default='/data/tanggp/tmp/Starspace/python/test/', help="Directory containing the dataset")
 
 # Hyper parameters for the vocab
