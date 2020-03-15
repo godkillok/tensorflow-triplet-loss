@@ -5,14 +5,16 @@ import json
 import os
 import re
 from common_tool import per_line
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--min_count_word', default=20, help="Minimum count for words in the dataset", type=int)
-parser.add_argument('--data_dir', default='/data/tanggp/tmp/Starspace/python/test/', help="Directory containing the dataset")
+parser.add_argument('--data_dir', default='/data/tanggp/tmp/Starspace/python/test/',
+                    help="Directory containing the dataset")
 
 # Hyper parameters for the vocab
-NUM_OOV_BUCKETS = 1 # number of buckets (= number of ids) for unknown words
+NUM_OOV_BUCKETS = 1  # number of buckets (= number of ids) for unknown words
 PAD_WORD = '0'
-label_class=[]
+label_class = []
 
 
 def save_vocab_to_txt_file(vocab, txt_path):
@@ -25,6 +27,7 @@ def save_vocab_to_txt_file(vocab, txt_path):
     with open(txt_path, "w", encoding="utf8") as f:
         f.write("\n".join(token for token in vocab))
 
+
 def save_label_to_txt_file(labels, txt_path):
     """
     Writes one token per line, 0-based line id corresponds to the id of the token.
@@ -34,7 +37,8 @@ def save_label_to_txt_file(labels, txt_path):
     """
     with open(txt_path, "w", encoding="utf8") as f:
         for vo in labels:
-            f.write("{}\x01\t{}\n".format(vo[0],vo[1]))
+            f.write("{}\x01\t{}\n".format(vo[0], vo[1]))
+
 
 def save_dict_to_json(d, json_path):
     """Saves dict to json file
@@ -60,8 +64,13 @@ def update_label(txt_path, labels):
             li = line.strip()
             li = li.split("__label__")
             for l in li[1:]:
-                labels.append(l.strip())
-
+                punctuation = r"""0123456789"""
+                text = re.sub(r'[{}]+'.format(punctuation), ' ', str(l))
+                text = ' '.join(text.split())
+                text = text.lower()
+                text = ' '.join(text.split("\x01_"))
+                text = ' '.join(text.split())
+                labels.append(text.strip())
 
 
 if __name__ == '__main__':
@@ -73,10 +82,10 @@ if __name__ == '__main__':
     update_label(os.path.join(args.data_dir, 'tag_space2'), labels)
     # update_label(os.path.join(args.data_dir, 'txt_golden'), labels)
     # update_label(os.path.join(args.data_dir, 'txt_valid'), labels)
-    labels_sort=sorted(Counter(labels).items(), key=lambda x: x[1], reverse=True)
+    labels_sort = sorted(Counter(labels).items(), key=lambda x: x[1], reverse=True)
     print('labels num {}'.format(len(labels_sort)))
     save_label_to_txt_file(labels_sort, os.path.join(args.data_dir, 'textcnn_label_sort'))
     print("- done.")
-    os.system("cat {}".format( os.path.join(args.data_dir, 'textcnn_label_sort')))
-    print("=="*8)
+    os.system("cat {}".format(os.path.join(args.data_dir, 'textcnn_label_sort')))
+    print("==" * 8)
     os.system("tail {}".format(os.path.join(args.data_dir, 'textcnn_label_sort')))
