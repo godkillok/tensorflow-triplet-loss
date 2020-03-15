@@ -73,7 +73,7 @@ def update_vocab_label(txt_path, vocab,word_lenth):
     punctuation = r"""!"#$%&()*+,-./:;<=>?@[\]^_`{|}~。，"""
     with open(txt_path, "r", encoding="utf8") as f:
         for i, line in enumerate(f):
-            text = line.strip()
+            text = line.strip().split("\x01\t")[0]
             tokens = text.split()
             tokens = [w.strip() for w in tokens if len(w.strip()) > 0 and not w.isdigit()]
             vocab.update(tokens)
