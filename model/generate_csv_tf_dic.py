@@ -59,7 +59,7 @@ def parse_line_dict(record,vocab_dict,label_dict):
         tag=[]
         for la in lab.split():
             if la not in vocab_dict:
-                print("{} not exist".format(la))
+                print("'{}' not exist".format(la))
             tag.append(vocab_dict.get(la,OOV))
         tags.append(tag)
     labels=[label_dict[lab] for lab in labels]
