@@ -154,7 +154,7 @@ def write_tfrecords(tf_lines, path_text, count):
         example = tf.train.Example(features=tf.train.Features(feature={
             'text': feature_auto(list(text)),
             'labels': feature_auto(list(labels)),
-            'tags': feature_auto(int(tags))
+            'tags': feature_auto(list(tags))
         }))
 
         writer.write(example.SerializeToString())
