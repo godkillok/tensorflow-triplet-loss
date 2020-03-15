@@ -36,8 +36,8 @@ def per_line(line):
     tokens = [w.strip() for w in tokens if len(w.strip()) > 0 and not w.isdigit()]
     return tokens,labels
 
-def parse_line_dict(record,vocab_dict,label_dict):
-    tokens,labels=per_line(record)
+def parse_line_dict(tokens,labels,vocab_dict,label_dict):
+
     print(tokens)
     print(labels)
     text = [vocab_dict.get(r,OOV) for r in tokens]
