@@ -35,4 +35,42 @@ def per_line(line):
     tokens = tokens.split()
     tokens = [w.strip() for w in tokens if len(w.strip()) > 0 and not w.isdigit()]
     return tokens,labels
-#1
+
+def parse_line_dict(record,vocab_dict,label_dict):
+    tokens,labels=per_line(record)
+    print(tokens)
+    print(labels)
+    text = [vocab_dict.get(r,OOV) for r in tokens]
+    # labels=labels[:12]
+    if len(labels) >= 12:
+        labels = labels[0: 12]
+    else:
+        labels += ['-111'] * (12 - len(labels))
+    tags=[]
+    for lab in labels:
+        tag=[]
+        for la in lab.split(' '):
+            # if la not in vocab_dict:
+            #     print("'{}' not exist".format(la))
+            tag.append(vocab_dict.get(la,0))
+        tags.append(tag)
+    labels=[label_dict.get(lab,-1) for lab in labels]
+    print([text,labels,tags])
+    return [text,labels,tags]
+
+
+def ini():
+    global pad_word,OOV
+
+    with open(FLAGS.path_vocab, 'r', encoding='utf8') as f:
+        lines = f.readlines()
+        vocab_dict = {l.strip(): (i) for i, l in enumerate(lines)}
+        pad_word=vocab_dict.get(pad_word)
+        OOV=vocab_dict.get(OOV)
+        print("pad_word {},OOV {} --vocab_dict {}".format(pad_word,OOV,len(vocab_dict)))
+
+    with open(FLAGS.path_label, 'r', encoding='utf8') as f:
+        lines = f.readlines()
+        label_dict = {l.strip().split("\x01\t")[0]: i for i, l in enumerate(lines)}
+
+    return vocab_dict,label_dict
