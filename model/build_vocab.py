@@ -62,6 +62,23 @@ def update_vocab(txt_path, vocab,word_lenth):
             vocab.update(tokens)
         return i+1
 
+def update_vocab_label(txt_path, vocab,word_lenth):
+    """Update word and tag vocabulary from dataset
+    Args:
+        txt_path: (string) path to file, one sentence per line
+        vocab: (dict or Counter) with update method
+    Returns:
+        dataset_size: (int) number of elements in the dataset
+    """
+    punctuation = r"""!"#$%&()*+,-./:;<=>?@[\]^_`{|}~。，"""
+    with open(txt_path, "r", encoding="utf8") as f:
+        for i, line in enumerate(f):
+            text = line.strip()
+            tokens = text.split()
+            tokens = [w.strip() for w in tokens if len(w.strip()) > 0 and not w.isdigit()]
+            vocab.update(tokens)
+        return i+1
+
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -70,6 +87,7 @@ if __name__ == '__main__':
     print("Building word vocabulary...")
     words = Counter()
     word_lenth=[]
+    update_vocab_label(os.path.join(args.data_dir, 'textcnn_label_sort'), words, word_lenth)
     size_train_sentences = update_vocab(os.path.join(args.data_dir, 'tag_space2'), words,word_lenth)
     size_test_sentences = update_vocab(os.path.join(args.data_dir, 'tag_space2'), words,word_lenth)
     # size_test_sentences = update_vocab(os.path.join(args.data_dir, 'txt_valid'), words, word_lenth)
