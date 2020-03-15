@@ -88,8 +88,8 @@ if __name__ == '__main__':
     words = Counter()
     word_lenth=[]
     update_vocab_label(os.path.join(args.data_dir, 'textcnn_label_sort'), words, word_lenth)
-    size_train_sentences = update_vocab(os.path.join(args.data_dir, 'tag_space2'), words,word_lenth)
-    size_test_sentences = update_vocab(os.path.join(args.data_dir, 'tag_space2'), words,word_lenth)
+    size_train_sentences = update_vocab(os.path.join(args.data_dir, 'tag_space'), words,word_lenth)
+    #size_test_sentences = update_vocab(os.path.join(args.data_dir, 'tag_space2'), words,word_lenth)
     # size_test_sentences = update_vocab(os.path.join(args.data_dir, 'txt_valid'), words, word_lenth)
     print("- done.")
     # word_lenth_count=Counter(word_lenth)

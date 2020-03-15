@@ -79,7 +79,7 @@ if __name__ == '__main__':
     # Build word vocab with train and test datasets
     print("Building labels...")
     labels = []
-    update_label(os.path.join(args.data_dir, 'tag_space2'), labels)
+    update_label(os.path.join(args.data_dir, 'tag_space'), labels)
     # update_label(os.path.join(args.data_dir, 'txt_golden'), labels)
     # update_label(os.path.join(args.data_dir, 'txt_valid'), labels)
     labels_sort = sorted(Counter(labels).items(), key=lambda x: x[1], reverse=True)
