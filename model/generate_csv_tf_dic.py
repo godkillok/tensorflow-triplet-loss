@@ -8,7 +8,7 @@ import random
 import random
 import json
 import time
-from common_tool import per_line,parse_line_dict
+from common_tool import per_line,parse_line_dict,ini
 flags = tf.app.flags
 flags.DEFINE_string("data_dir", "/data/tanggp/tmp/Starspace/python/test/", "Directory containing the dataset")
 flags.DEFINE_string("pad_word", '0', "used for pad sentence")
