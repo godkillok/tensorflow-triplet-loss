@@ -8,7 +8,7 @@ import tensorflow as tf
 # from model.input_fn import train_input_fn
 # from model.input_fn import test_input_fn
 from model.model_triplet_net import model_fn
-from model.utils import Params
+# from model.utils import Params
 
 
 parser = argparse.ArgumentParser()
@@ -17,30 +17,31 @@ parser.add_argument('--model_dir', default='C:\work\\tensorflow-triplet-loss\exp
 parser.add_argument('--data_dir', default='C:\work\\tensorflow-triplet-loss\data\\',
                     help="Directory containing the dataset")
 
-def train_input_fn(data_dir):
-    """Train input function for the MNIST dataset.
+def parse_exmp(serialized_example):
+    feats = tf.parse_single_example(
+        serialized_example,
+        features={
+            "text": tf.FixedLenFeature([FLAGS.sentence_max_len], tf.int64),
+            # {"text": text, "label": label, "author": author, "categories": categories}
+             "labels": tf.FixedLenFeature([12], tf.int64),
+            "tags": tf.FixedLenFeature([12*10], tf.int64)
+        })
 
-    Args:
-        data_dir: (string) path to the data directory
-        params: (Params) contains hyperparameters of the model (ex: `params.num_epochs`)
-    """
-    dataset = mnist_dataset.train(data_dir)
-    dataset = dataset.shuffle(train_size)  # whole dataset into the buffer
-    dataset = dataset.repeat(num_epochs)  # repeat for multiple epochs
-    dataset = dataset.batch(batch_size)
-    dataset = dataset.prefetch(1)  # make sure you always have one batch ready to serve
-    return dataset
+    labels = feats.pop('label')
 
-def test_input_fn(data_dir):
-    """Test input function for the MNIST dataset.
+    return feats, labels
 
-    Args:
-        data_dir: (string) path to the data directory
-        params: (Params) contains hyperparameters of the model (ex: `params.num_epochs`)
-    """
-    dataset = mnist_dataset.test(data_dir)
-    dataset = dataset.batch(batch_size)
-    dataset = dataset.prefetch(1)  # make sure you always have one batch ready to serve
+
+def train_input_fn(filenames, shuffle_buffer_size,shuffle=True,repeat=0):
+
+    # Load txt file, one example per line
+    files = tf.data.Dataset.list_files(filenames)  # A dataset of all files matching a pattern.
+    dataset = files.apply(
+        tf.contrib.data.parallel_interleave(tf.data.TFRecordDataset, cycle_length=FLAGS.num_parallel_readers))
+    if shuffle_buffer_size > 0:
+        dataset = dataset.shuffle(shuffle_buffer_size).repeat(FLAGS.train_epoch)
+    dataset = dataset.apply(tf.contrib.data.map_and_batch(map_func=parse_exmp, batch_size=FLAGS.batch_size,
+                                                          num_parallel_calls=2))
     return dataset
 
 
@@ -50,9 +51,9 @@ if __name__ == '__main__':
 
     # Load the parameters from json file
     args = parser.parse_args()
-    json_path = os.path.join(args.model_dir, 'params.json')
-    assert os.path.isfile(json_path), "No json configuration file found at {}".format(json_path)
-    params = Params(json_path)
+    # json_path = os.path.join(args.model_dir, 'params.json')
+    # assert os.path.isfile(json_path), "No json configuration file found at {}".format(json_path)
+    # params = Params(json_path)
 
     # Define the model
     tf.logging.info("Creating the model...")
