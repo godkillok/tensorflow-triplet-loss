@@ -84,7 +84,7 @@ def per_thouds_lines_dict(result_lines, path_text, count,pad_word,flag_name=''):
 
 def  parse_line_dict2(line,vocab_dict,label_dict):
     tokens, labels=per_line(line)
-    return parse_line_dict(tokens,labels,vocab_dict,label_dict,vocab_dict[OOV])
+    return parse_line_dict(tokens,labels,vocab_dict,label_dict,vocab_dict[FLAGS.OOV])
 
 
 
@@ -101,7 +101,7 @@ def generate_tf_dic(path_text,vocab_dict,label_dict):
             result_lines.append(parse_line_dict2(line,vocab_dict,label_dict))
             if count>0 and count % 50000 == 0:
                 print(count)
-                pad_word=vocab_dict[pad_word]
+                pad_word=vocab_dict[FLAGS.pad_word]
                 per_thouds_lines_dict(result_lines, path_text, count,pad_word)
                 result_lines = []
         if len(result_lines)>0:
