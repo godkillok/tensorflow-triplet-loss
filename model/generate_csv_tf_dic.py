@@ -10,13 +10,11 @@ import json
 import time
 from common_tool import per_line
 flags = tf.app.flags
-flags.DEFINE_string("data_dir", "/data/tanggp/youtube8m/", "Directory containing the dataset")
+flags.DEFINE_string("data_dir", "/data/tanggp/tmp/Starspace/python/test/", "Directory containing the dataset")
 flags.DEFINE_string("pad_word", '0', "used for pad sentence")
-flags.DEFINE_string("OOV", '-1v', "used for pad sentence")
-flags.DEFINE_string("path_vocab", "/data/tanggp/youtube8m/textcnn_words.txt", "used for word index")
-flags.DEFINE_string("path_author",  os.path.join("/data/tanggp/youtube8m/", 'textcnn_author_sort'), "Directory containing the dataset")
-flags.DEFINE_string("path_label",  os.path.join("/data/tanggp/youtube8m/", 'textcnn_label_sort'), "Directory containing the dataset")
-flags.DEFINE_string("path_categories",  os.path.join("/data/tanggp/youtube8m/", 'textcnn_categories_sort'), "Directory containing the dataset")
+flags.DEFINE_string("OOV", 'unknown', "used for pad sentence")
+flags.DEFINE_string("path_vocab", "/data/tanggp/tmp/Starspace/python/test/textcnn_words.txt", "used for word index")
+flags.DEFINE_string("path_label",  os.path.join("/data/tanggp/tmp/Starspace/python/test/", 'textcnn_label_sort'), "Directory containing the dataset")
 FLAGS = flags.FLAGS
 
 sentence_max_len = 200
