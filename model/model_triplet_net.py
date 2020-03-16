@@ -141,7 +141,8 @@ def model_fn(features, mode,params):
     x_tower=features["text"]
     tag_logit,labels= get_tag_embedding(labels_lists,y_tower,word_embedding)
     sentence_logit=get_txt_embedding(x_tower, word_embedding)
-
+    sentence_logit = tf.nn.l2_normalize(sentence_logit, dim=1)
+    tag_logit = tf.nn.l2_normalize(tag_logit, dim=1)
     embedding_mean_norm = tf.reduce_mean(tf.norm(sentence_logit, axis=1))
     tf.summary.scalar("embedding_mean_norm", embedding_mean_norm)
     eval_metric_ops = {"embedding_mean_norm": tf.metrics.mean(embedding_mean_norm)}
