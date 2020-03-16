@@ -16,8 +16,8 @@ def _pairwise_distances(embeddings_a,embedding_b, squared=False):
     """
     # Get the dot product between all embeddings
     # shape (batch_size, batch_size)
-    embeddings_a1 = tf.nn.l2_normalize(embeddings_a, dim=1)
-    embedding_b1 = tf.nn.l2_normalize(embedding_b, dim=1)
+    embeddings_a = tf.nn.l2_normalize(embeddings_a, dim=1)
+    embedding_b = tf.nn.l2_normalize(embedding_b, dim=1)
     dot_product = tf.matmul(embeddings_a, tf.transpose(embedding_b))
     #dot_product1 = tf.matmul(embeddings_a1, tf.transpose(embedding_b1))
     tf.summary.histogram('dot_product', dot_product)
