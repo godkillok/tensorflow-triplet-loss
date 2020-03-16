@@ -216,9 +216,9 @@ def batch_hard_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fa
     tf.summary.scalar("hardest_negative_dist", tf.reduce_mean(hardest_negative_dist))
 
     # Combine biggest d(a, p) and smallest d(a, n) into final triplet loss
-    triplet_loss = tf.maximum(hardest_positive_dist - hardest_negative_dist + margin, 0.0)
+    triplet_loss = tf.maximum(hardest_positive_dist + margin, 0.0)
 
     # Get final mean triplet loss
     triplet_loss = tf.reduce_mean(triplet_loss)
 
-    return triplet_loss
+    return triplet_loss,hardest_positive_dist , hardest_negative_dist
