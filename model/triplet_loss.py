@@ -221,4 +221,4 @@ def batch_hard_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fa
     # Get final mean triplet loss
     triplet_loss = tf.reduce_mean(triplet_loss)
 
-    return triplet_loss,hardest_positive_dist , hardest_negative_dist
+    return triplet_loss
