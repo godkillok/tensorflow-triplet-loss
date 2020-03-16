@@ -58,7 +58,7 @@ def parse_line_dict(tokens,labels,vocab_dict,label_dict,OOV):
     # print([text,labels,tags])
     return [text,labels,tags]
 
-def line_para(rl):
+def line_para(rl,pad_word):
     text = rl[0]
     label = rl[1]
     tags = rl[2]
