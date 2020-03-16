@@ -19,7 +19,7 @@ def _pairwise_distances(embeddings_a,embedding_b, squared=False):
     embeddings_a = tf.nn.l2_normalize(embeddings_a, dim=1)
     embedding_b = tf.nn.l2_normalize(embedding_b, dim=1)
     dot_product = tf.matmul(embeddings_a, tf.transpose(embedding_b))
-
+    tf.summary.histogram('dot_product',dot_product)
     # Get squared L2 norm for each embedding. We can just take the diagonal of `dot_product`.
     # This also provides more numerical stability (the diagonal of the result will be exactly 0).
     # shape (batch_size,)
