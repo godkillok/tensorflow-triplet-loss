@@ -62,9 +62,10 @@ if __name__ == '__main__':
     config = tf.estimator.RunConfig(tf_random_seed=230,
                                     model_dir=args.model_dir,
                                     save_summary_steps=5)
-    json_path = os.path.join(args.model_dir, 'params.json')
-    assert os.path.isfile(json_path), "No json configuration file found at {}".format(json_path)
-    params = Params(json_path)
+    #json_path = os.path.join(args.model_dir, 'params.json')
+    # assert os.path.isfile(json_path), "No json configuration file found at {}".format(json_path)
+    # params = Params(json_path)
+    params=None
     estimator = tf.estimator.Estimator(model_fn, params=params, config=config)
 
     # Train the model
