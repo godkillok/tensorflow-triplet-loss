@@ -150,7 +150,7 @@ def batch_all_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fal
     # Uses broadcasting where the 1st argument has shape (batch_size, batch_size, 1)
     # and the 2nd (batch_size, 1, batch_size)
     triplet_loss = anchor_positive_dist - anchor_negative_dist + margin
-
+    tf.summary.histogram('triplet_loss', triplet_loss)
     # Put to zero the invalid triplets
     # (where label(a) != label(p) or label(n) == label(a) or a == p)
     mask = _get_triplet_mask(labels)
@@ -159,9 +159,9 @@ def batch_all_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fal
     triplet_loss2=triplet_loss
     # Remove negative losses (i.e. the easy triplets)
     triplet_loss = tf.maximum(triplet_loss, 0.0)
-    tf.summary.histogram('anchor_positive_dist', anchor_positive_dist - anchor_negative_dist)
-    tf.summary.histogram('anchor_negative_dist', anchor_negative_dist)
-    tf.summary.histogram('triplet_loss', triplet_loss)
+    # tf.summary.histogram('anchor_positive_dist', anchor_positive_dist - anchor_negative_dist)
+    # # tf.summary.histogram('anchor_negative_dist', anchor_negative_dist)
+
     # Count number of positive triplets (where triplet_loss > 0)
     valid_triplets = tf.to_float(tf.greater(triplet_loss, 1e-16))
     num_positive_triplets = tf.reduce_sum(valid_triplets)
