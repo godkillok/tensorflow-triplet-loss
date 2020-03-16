@@ -148,13 +148,18 @@ def model_fn(features, mode,params):
 
     if mode == tf.estimator.ModeKeys.PREDICT:
         predictions = {'sentence_logit': sentence_logit,"tag_logit":tag_logit,"labels":labels}
-        return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
+        export_outputs = {
+            'prediction': tf.estimator.export.PredictOutput(predictions)
+        }
+        return tf.estimator.EstimatorSpec(
+            mode, predictions=predictions, export_outputs=export_outputs)
+        # return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
 
     labels = tf.cast(labels, tf.int64)  # Tensor("Cast:0", shape=(?,), dtype=int64)
     triplet_strategy = "batch_hard"
     # Define triplet loss
     if triplet_strategy == "batch_all":
-        loss, fraction,num_positive_triplets = batch_all_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
+        loss, fraction,num_positive_triplets = batch_all_triplet_loss(labels, sentence_logit,tag_logit, margin=0.2,
                                                 squared=False)
 
 
@@ -162,7 +167,7 @@ def model_fn(features, mode,params):
         tf.summary.scalar('fraction_positive_triplets', fraction)
 
     else : #triplet_strategy == "batch_hard"
-        loss = batch_hard_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
+        loss = batch_hard_triplet_loss(labels, sentence_logit,tag_logit, margin=0.2,
                                        squared=False)
     # else:
     #     raise ValueError("Triplet strategy not recognized: {}".format(params.triplet_strategy))
