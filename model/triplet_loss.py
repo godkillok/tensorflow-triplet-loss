@@ -16,8 +16,8 @@ def _pairwise_distances(embeddings_a,embedding_b, squared=False):
     """
     # Get the dot product between all embeddings
     # shape (batch_size, batch_size)
-    # embeddings_a = tf.nn.l2_normalize(embeddings_a, dim=1)
-    # embedding_b = tf.nn.l2_normalize(embedding_b, dim=1)
+    embeddings_a = tf.nn.l2_normalize(embeddings_a, dim=1)
+    embedding_b = tf.nn.l2_normalize(embedding_b, dim=1)
     dot_product = tf.matmul(embeddings_a, tf.transpose(embedding_b))
 
     # Get squared L2 norm for each embedding. We can just take the diagonal of `dot_product`.
@@ -44,7 +44,7 @@ def _pairwise_distances(embeddings_a,embedding_b, squared=False):
         # Correct the epsilon added: set the distances on the mask to be exactly 0.0
         distances = distances * (1.0 - mask)
 
-    return distances
+    return dot_product
 
 
 def _get_anchor_positive_triplet_mask(labels):
@@ -107,14 +107,14 @@ def _get_triplet_mask(labels):
 
     distinct_indices = tf.logical_and( i_not_equal_k, j_not_equal_k)
 
-    # Check if labels[i] == labels[j] and labels[i] != labels[k]
+    # # Check if labels[i] == labels[j] and labels[i] != labels[k]
     label_equal = tf.equal(tf.expand_dims(labels, 0), tf.expand_dims(labels, 1))
     i_equal_j = tf.expand_dims(label_equal, 2)
-    i_equal_k = tf.expand_dims(label_equal, 1)
-
-    valid_labels = tf.logical_and(i_equal_j, tf.logical_not(i_equal_k))
-
-    # Combine the two masks
+    # i_equal_k = tf.expand_dims(label_equal, 1)
+    #
+    valid_labels = i_equal_j
+    #
+    # # Combine the two masks
     mask = tf.logical_and(distinct_indices, valid_labels)
 
     return mask
