@@ -156,7 +156,7 @@ def model_fn(features, mode,params):
         # return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
 
     labels = tf.cast(labels, tf.int64)  # Tensor("Cast:0", shape=(?,), dtype=int64)
-    triplet_strategy = "batch_hard"
+    triplet_strategy = "batch_all"
     # Define triplet loss
     if triplet_strategy == "batch_all":
         loss, fraction,num_positive_triplets = batch_all_triplet_loss(labels, sentence_logit,tag_logit, margin=0.2,
