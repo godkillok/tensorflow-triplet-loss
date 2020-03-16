@@ -10,7 +10,7 @@ import tensorflow as tf
 from model.model_triplet_net import model_fn
 from model.utils import Params
 
-
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 parser = argparse.ArgumentParser()
 parser.add_argument('--model_dir', default='/data/tanggp/tmp/tensorflow-triplet-loss/experiments/batch_all',
                     help="Experiment directory containing params.json")
