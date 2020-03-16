@@ -64,6 +64,10 @@ if __name__ == '__main__':
                                     model_dir=args.model_dir,
                                     save_summary_steps=5
                                     )
+    session_config = tf.ConfigProto(log_device_placement=True)
+    session_config.gpu_options.allow_growth = True
+    run_config = tf.estimator.RunConfig().replace(session_config=session_config)
+
     # config.gpu_options.allow_growth = True
     #json_path = os.path.join(args.model_dir, 'params.json')
     # assert os.path.isfile(json_path), "No json configuration file found at {}".format(json_path)
