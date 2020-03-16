@@ -32,7 +32,7 @@ def _pairwise_distances(embeddings_a,embedding_b, squared=False):
 
     # Because of computation errors, some distances might be negative so we put everything >= 0.0
     distances = tf.maximum(distances, 0.0)
-    tf.summary.histogram('dot_product', distances)
+    tf.summary.histogram('distances', distances)
     if not squared:
         # Because the gradient of sqrt is infinite when distances == 0.0 (ex: on the diagonal)
         # we need to add a small epsilon where distances == 0.0
@@ -158,11 +158,14 @@ def batch_all_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fal
     triplet_loss2=triplet_loss
     # Remove negative losses (i.e. the easy triplets)
     triplet_loss = tf.maximum(triplet_loss, 0.0)
-
+    tf.summary.histogram('anchor_positive_dist', anchor_positive_dist - anchor_negative_dist)
+    tf.summary.histogram('anchor_negative_dist', anchor_negative_dist)
+    tf.summary.histogram('triplet_loss', triplet_loss)
     # Count number of positive triplets (where triplet_loss > 0)
     valid_triplets = tf.to_float(tf.greater(triplet_loss, 1e-16))
     num_positive_triplets = tf.reduce_sum(valid_triplets)
     num_valid_triplets = tf.reduce_sum(mask)
+    #tf.summary.scalar('num_valid_triplets', num_valid_triplets)
     fraction_positive_triplets = num_positive_triplets / (num_valid_triplets + 1e-16)
 
     # Get final mean triplet loss over the positive valid triplets
