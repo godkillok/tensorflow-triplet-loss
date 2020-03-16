@@ -43,7 +43,7 @@ def _pairwise_distances(embeddings_a,embedding_b, squared=False):
 
         # Correct the epsilon added: set the distances on the mask to be exactly 0.0
         distances = distances * (1.0 - mask)
-
+    dot_product=1-dot_product
     return dot_product
 
 
@@ -156,7 +156,7 @@ def batch_all_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fal
     mask = _get_triplet_mask(labels)
     mask = tf.to_float(mask)
     triplet_loss = tf.multiply(mask, triplet_loss)
-
+    triplet_loss2=triplet_loss
     # Remove negative losses (i.e. the easy triplets)
     triplet_loss = tf.maximum(triplet_loss, 0.0)
 
@@ -169,7 +169,7 @@ def batch_all_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fal
     # Get final mean triplet loss over the positive valid triplets
     triplet_loss = tf.reduce_sum(triplet_loss) / (num_positive_triplets + 1e-16)
 
-    return triplet_loss, fraction_positive_triplets,num_positive_triplets
+    return triplet_loss, fraction_positive_triplets,num_positive_triplets,triplet_loss2,mask
 
 
 def batch_hard_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=False):
