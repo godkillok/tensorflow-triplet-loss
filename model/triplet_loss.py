@@ -16,8 +16,8 @@ def _pairwise_distances(embeddings_a,embedding_b, squared=False):
     """
     # Get the dot product between all embeddings
     # shape (batch_size, batch_size)
-    embeddings_a = tf.nn.l2_normalize(embeddings_a, dim=1)
-    embedding_b = tf.nn.l2_normalize(embedding_b, dim=1)
+    # embeddings_a = tf.nn.l2_normalize(embeddings_a, dim=1)
+    # embedding_b = tf.nn.l2_normalize(embedding_b, dim=1)
     dot_product = tf.matmul(embeddings_a, tf.transpose(embedding_b))
 
     # Get squared L2 norm for each embedding. We can just take the diagonal of `dot_product`.
@@ -44,7 +44,7 @@ def _pairwise_distances(embeddings_a,embedding_b, squared=False):
         # Correct the epsilon added: set the distances on the mask to be exactly 0.0
         distances = distances * (1.0 - mask)
 
-    return dot_product
+    return distances
 
 
 def _get_anchor_positive_triplet_mask(labels):
