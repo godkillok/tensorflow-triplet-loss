@@ -79,6 +79,8 @@ def generate_tf_dic(path_text,vocab_dict,label_dict):
 
     result_lines = []
     count = 0
+
+    pad_word = vocab_dict[FLAGS.pad_word]
     with open(path_text, 'r', encoding='utf8') as f:
         lines = f.readlines()
         random.shuffle(lines)
@@ -87,11 +89,10 @@ def generate_tf_dic(path_text,vocab_dict,label_dict):
             result_lines.append(parse_line_dict2(line,vocab_dict,label_dict))
             if count>0 and count % 50000 == 0:
                 print(count)
-                pad_word=vocab_dict[FLAGS.pad_word]
                 per_thouds_lines_dict(result_lines, path_text, count,pad_word)
                 result_lines = []
         if len(result_lines)>0:
-            per_thouds_lines_dict(result_lines, path_text, count)
+            per_thouds_lines_dict(result_lines, path_text, count,pad_word)
 
 
 def write_tfrecords(tf_lines, path_text, count):
