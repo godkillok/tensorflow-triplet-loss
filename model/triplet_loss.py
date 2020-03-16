@@ -44,7 +44,7 @@ def _pairwise_distances(embeddings_a,embedding_b, squared=False):
         # Correct the epsilon added: set the distances on the mask to be exactly 0.0
         distances = distances * (1.0 - mask)
 
-    return distances
+    return dot_product
 
 
 def _get_anchor_positive_triplet_mask(labels):
