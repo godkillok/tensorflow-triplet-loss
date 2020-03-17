@@ -10,9 +10,9 @@ import tensorflow as tf
 from model.model_triplet_net import model_fn
 from model.utils import Params
 
-os.environ['CUDA_VISIBLE_DEVICES'] ="7"
+os.environ['CUDA_VISIBLE_DEVICES'] ="6"
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_dir', default='/data/tanggp/tmp/tensorflow-triplet-loss/experiments/batch_all_2',
+parser.add_argument('--model_dir', default='/data/tanggp/tmp/tensorflow-triplet-loss/experiments/batch_all_3',
                     help="Experiment directory containing params.json")
 parser.add_argument('--data_dir', default='/data/tanggp/tmp/Starspace/python/test/*.tfrecords',
                     help="Directory containing the dataset")
