@@ -44,8 +44,8 @@ def _pairwise_distances(embeddings_a,embedding_b, squared=False):
     #
     #     # Correct the epsilon added: set the distances on the mask to be exactly 0.0
     #     distances = distances * (1.0 - mask)
-    distances =1- dot_product
-    return distances
+    # distances =1-dot_product
+    return dot_product
 
 
 def _get_anchor_positive_triplet_mask(labels):
@@ -150,7 +150,7 @@ def batch_all_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fal
     # triplet_loss[i, j, k] will contain the triplet loss of anchor=i, positive=j, negative=k
     # Uses broadcasting where the 1st argument has shape (batch_size, batch_size, 1)
     # and the 2nd (batch_size, 1, batch_size)
-    triplet_loss = anchor_positive_dist - anchor_negative_dist + margin
+    triplet_loss = margin-anchor_positive_dist + anchor_negative_dist
     tf.summary.histogram('triplet_loss', triplet_loss)
     # Put to zero the invalid triplets
     # (where label(a) != label(p) or label(n) == label(a) or a == p)
