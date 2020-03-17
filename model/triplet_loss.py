@@ -44,7 +44,7 @@ def _pairwise_distances(embeddings_a,embedding_b, squared=False):
     #
     #     # Correct the epsilon added: set the distances on the mask to be exactly 0.0
     #     distances = distances * (1.0 - mask)
-    distances =1- tf.maximum(dot_product, 0.0)
+    distances =1- dot_product
     return distances
 
 
