@@ -20,7 +20,7 @@ def _pairwise_distances(embeddings_a,embedding_b, squared=False):
     embedding_b = tf.nn.l2_normalize(embedding_b, dim=1)
     dot_product = tf.matmul(embeddings_a, tf.transpose(embedding_b))
     #dot_product1 = tf.matmul(embeddings_a1, tf.transpose(embedding_b1))
-    tf.summary.histogram('dot_product', dot_product)
+    #tf.summary.histogram('dot_product', dot_product)
     # Get squared L2 norm for each embedding. We can just take the diagonal of `dot_product`.
     # This also provides more numerical stability (the diagonal of the result will be exactly 0).
     # shape (batch_size,)
@@ -151,7 +151,7 @@ def batch_all_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fal
     # Uses broadcasting where the 1st argument has shape (batch_size, batch_size, 1)
     # and the 2nd (batch_size, 1, batch_size)
     triplet_loss = margin-anchor_positive_dist + anchor_negative_dist
-    tf.summary.histogram('triplet_loss', triplet_loss)
+    #tf.summary.histogram('triplet_loss', triplet_loss)
     # Put to zero the invalid triplets
     # (where label(a) != label(p) or label(n) == label(a) or a == p)
     mask = _get_triplet_mask(labels)
@@ -217,7 +217,7 @@ def batch_hard_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fa
 
     # shape (batch_size,)
     hardest_negative_dist = tf.reduce_min(anchor_negative_dist, axis=1, keepdims=True)
-    tf.summary.scalar("hardest_negative_dist", tf.reduce_mean(hardest_negative_dist))
+    #tf.summary.scalar("hardest_negative_dist", tf.reduce_mean(hardest_negative_dist))
 
     # Combine biggest d(a, p) and smallest d(a, n) into final triplet loss
     triplet_loss = tf.maximum(hardest_positive_dist + margin, 0.0)
