@@ -192,7 +192,7 @@ def model_fn(features, mode,params):
     # tf.summary.image('train_image', images, max_outputs=1)
 
     # Define training step that minimizes the loss with the Adam optimizer
-    optimizer = tf.train.AdamOptimizer(0.001)
+    optimizer = tf.train.AdamOptimizer(0.005)
     global_step = tf.train.get_global_step()
     # if params.use_batch_norm:
     #     # Add a dependency to update the moving mean and variance for batch normalization
