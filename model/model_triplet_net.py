@@ -160,7 +160,7 @@ def model_fn(features, mode,params):
     triplet_strategy = "batch_all"
     # Define triplet loss
     if triplet_strategy == "batch_all":
-        loss, fraction,num_positive_triplets = batch_all_triplet_loss(labels, sentence_logit,tag_logit, margin=0.2,
+        loss, fraction,num_positive_triplets = batch_all_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
                                                 squared=False)
 
 
@@ -168,7 +168,7 @@ def model_fn(features, mode,params):
         tf.summary.scalar('fraction_positive_triplets', fraction)
 
     else : #triplet_strategy == "batch_hard"
-        loss = batch_hard_triplet_loss(labels, sentence_logit,tag_logit, margin=0.2,
+        loss = batch_hard_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
                                        squared=False)
     # else:
     #     raise ValueError("Triplet strategy not recognized: {}".format(params.triplet_strategy))
