@@ -12,7 +12,7 @@ from model.utils import Params
 
 os.environ['CUDA_VISIBLE_DEVICES'] ="8"
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_dir', default='/data/tanggp/tmp/tensorflow-triplet-loss/experiments/batch_all_3',
+parser.add_argument('--model_dir', default='/data/tanggp/tmp/tensorflow-triplet-loss/experiments/batch_all_2',
                     help="Experiment directory containing params.json")
 parser.add_argument('--data_dir', default='/data/tanggp/tmp/Starspace/python/test/*.tfrecords',
                     help="Directory containing the dataset")
