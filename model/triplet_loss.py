@@ -180,7 +180,8 @@ def batch_all_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fal
     valid_triplets1 = tf.to_float(tf.greater(triplet_loss1, 1e-16))
     num_positive_triplets1 = tf.reduce_sum(valid_triplets1)
     triplet_loss=tf.reduce_sum(triplet_loss1) / (num_positive_triplets1 + 1e-16)
-    triplet_loss-=0.05*tf.reduce_mean(square_norm)
+
+    triplet_loss=triplet_loss-0.05*tf.reduce_mean(square_norm)+0.005*tf.reduce_mean(pairwise_dist-tf.matrix_diag(square_norm))
     # triplet_loss= tf.maximum(0.,triplet_loss)
     return triplet_loss, fraction_positive_triplets,num_positive_triplets
 
