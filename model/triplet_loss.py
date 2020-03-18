@@ -186,8 +186,8 @@ def batch_all_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fal
     triplet_loss=tf.reduce_sum(triplet_loss1) / (num_positive_triplets1 + 1e-16)
 
     triplet_loss=triplet_loss-0.05*tf.reduce_mean(square_norm)+0.005*tf.reduce_mean(neg)
-
-    return triplet_loss, fraction_positive_triplets,num_positive_triplets
+    cosine=tf.reduce_mean(square_norm)
+    return triplet_loss, fraction_positive_triplets,num_positive_triplets,cosine
 
 
 def batch_hard_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=False):
