@@ -16,6 +16,8 @@ parser.add_argument('--model_dir', default='/data/tanggp/tmp/tensorflow-triplet-
                     help="Experiment directory containing params.json")
 parser.add_argument('--data_dir', default='/data/tanggp/tmp/Starspace/python/test/*.tfrecords',
                     help="Directory containing the dataset")
+parser.add_argument('--eva_dir', default='/data/tanggp/tmp/Starspace/python/test/100*.tfrecords',
+                    help="Directory containing the dataset")
 num_parallel_readers=4
 batch_size=128
 num_epochs=20
@@ -77,13 +79,15 @@ if __name__ == '__main__':
 
     # Train the model
     tf.logging.info("Starting training for {} epoch(s).".format(num_epochs))
-    estimator.train(lambda: train_input_fn(args.data_dir))
+    eval_spec = tf.estimator.EvalSpec(input_fn=lambda: train_input_fn(args.eva_dir), throttle_secs=1200)
+    train_spec = tf.estimator.TrainSpec(input_fn=lambda: train_input_fn(args.data_dir))
+    tf.estimator.train_and_evaluate(estimator,train_spec,eval_spec)
 
     # Evaluate the model on the test set
-    tf.logging.info("Evaluation on test set.")
-    res = estimator.evaluate(lambda: train_input_fn(args.data_dir))
-    for key in res:
-        print("{}: {}".format(key, res[key]))
+    # tf.logging.info("Evaluation on test set.")
+    # res = estimator.evaluate(lambda: train_input_fn(args.data_dir))
+    # for key in res:
+    #     print("{}: {}".format(key, res[key]))
 
     # Evaluate the model on the test set
     # tf.logging.info("Predition on pred set.")
