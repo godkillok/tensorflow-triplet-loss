@@ -17,7 +17,7 @@ parser.add_argument('--model_dir', default='/data/tanggp/tmp/tensorflow-triplet-
 parser.add_argument('--data_dir', default='/data/tanggp/tmp/Starspace/python/test/*.tfrecords',
                     help="Directory containing the dataset")
 num_parallel_readers=4
-batch_size=256*2
+batch_size=128
 num_epochs=20
 def parse_exmp(serialized_example):
     feats = tf.parse_single_example(
