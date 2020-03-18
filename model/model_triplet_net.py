@@ -146,7 +146,7 @@ def model_fn(features, mode,params):
     tag_logit = tf.nn.l2_normalize(tag_logit, dim=1)
     embedding_mean_norm = tf.reduce_mean(tf.norm(sentence_logit, axis=1))
     tf.summary.scalar("embedding_mean_norm", embedding_mean_norm)
-    eval_metric_ops = {"embedding_mean_norm": tf.metrics.mean(embedding_mean_norm)}
+
 
     if mode == tf.estimator.ModeKeys.PREDICT:
         predictions = {'sentence_logit': sentence_logit,"tag_logit":tag_logit,"labels":labels}
@@ -161,7 +161,7 @@ def model_fn(features, mode,params):
     triplet_strategy = "batch_all"
     # Define triplet loss
     if triplet_strategy == "batch_all":
-        loss, fraction,num_positive_triplets = batch_all_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
+        loss, fraction,num_positive_triplets,cosine,neg = batch_all_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
                                                 squared=False)
 
 
@@ -180,7 +180,7 @@ def model_fn(features, mode,params):
     # TODO: some other metrics like rank-1 accuracy?
     # with tf.variable_scope("metrics"):
     #     eval_metric_ops = {"embedding_mean_norm": tf.metrics.mean(embedding_mean_norm)}
-
+    eval_metric_ops = {"cosine": cosine,"neg":neg}
 
     if mode == tf.estimator.ModeKeys.EVAL:
         return tf.estimator.EstimatorSpec(mode, loss=loss, eval_metric_ops=eval_metric_ops)
@@ -193,7 +193,7 @@ def model_fn(features, mode,params):
     # tf.summary.image('train_image', images, max_outputs=1)
 
     # Define training step that minimizes the loss with the Adam optimizer
-    optimizer = tf.train.AdamOptimizer(0.005)
+    optimizer = tf.train.AdamOptimizer(0.05)
     global_step = tf.train.get_global_step()
     # if params.use_batch_norm:
     #     # Add a dependency to update the moving mean and variance for batch normalization
