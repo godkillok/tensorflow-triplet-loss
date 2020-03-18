@@ -63,7 +63,7 @@ def assign_pretrained_word_embedding(params):
     print("using pre-trained word emebedding.ended...")
     return word_embedding_final
 
-def cnn(sentence,embeddings,num_filters,filter_sizes,sentence_max_len):
+def cnn(sentence,embeddings,num_filters,filter_sizes,sentence_max_len,mode):
     #print("sentence.shape[2] {}".format(sentence.shape))
     sentence = tf.nn.embedding_lookup(embeddings, sentence)
     sentence = tf.expand_dims(sentence, -1)
@@ -77,10 +77,11 @@ def cnn(sentence,embeddings,num_filters,filter_sizes,sentence_max_len):
             filters=num_filters,
             kernel_size=[filter_size, filter_len],
             strides=(1, 1),
-            padding="VALID"
-        )  # activation=tf.nn.relu
-        # conv = tf.layers.batch_normalization(conv, training=(mode == tf.estimator.ModeKeys.TRAIN))
-        conv = tf.nn.relu(conv)
+            padding="VALID",
+          activation=tf.nn.relu
+        )
+        conv = tf.layers.batch_normalization(conv, training=(mode == tf.estimator.ModeKeys.TRAIN))
+        # conv = tf.nn.relu(conv)
 
         # conv = tf.layers.conv2d(
         #     conv,
@@ -111,21 +112,21 @@ def cnn(sentence,embeddings,num_filters,filter_sizes,sentence_max_len):
     logits = tf.layers.dense(h_pool_flat, 100, activation=None)
     return logits
 
-def  get_tag_embedding(labels_lists,y_tower,word_embedding):
+def  get_tag_embedding(labels_lists,y_tower,word_embedding,mode):
     tags,labels=random_tag(labels_lists,y_tower)
     print("tag {}".format(tags.shape))
     num_filters=3
     filter_sizes=[2,3,4]
     sentence_max_len=10
-    tag_logit=cnn(tags, word_embedding, num_filters, filter_sizes, sentence_max_len)
+    tag_logit=cnn(tags, word_embedding, num_filters, filter_sizes, sentence_max_len,mode)
     return tag_logit,labels
 
-def get_txt_embedding(x_tower,word_embedding):
+def get_txt_embedding(x_tower,word_embedding,mode):
     sentence_max_len=60
     num_filters=3
     filter_sizes=[2,3,4,5,7]
     # sentence_max_len=10
-    sentence_logit=cnn(x_tower, word_embedding, num_filters, filter_sizes, sentence_max_len)
+    sentence_logit=cnn(x_tower, word_embedding, num_filters, filter_sizes, sentence_max_len,mode)
     return sentence_logit
 
 def model_fn(features, mode,params):
@@ -139,8 +140,8 @@ def model_fn(features, mode,params):
     y_tower=tf.reshape(y_tower,[-1,12,10])
     labels_lists=features["labels"]
     x_tower=features["text"]
-    tag_logit,labels= get_tag_embedding(labels_lists,y_tower,word_embedding)
-    sentence_logit=get_txt_embedding(x_tower, word_embedding)
+    tag_logit,labels= get_tag_embedding(labels_lists,y_tower,word_embedding,mode)
+    sentence_logit=get_txt_embedding(x_tower, word_embedding,mode)
     sentence_logit = tf.nn.l2_normalize(sentence_logit, dim=1)
     tag_logit = tf.nn.l2_normalize(tag_logit, dim=1)
     embedding_mean_norm = tf.reduce_mean(tf.norm(sentence_logit, axis=1))
