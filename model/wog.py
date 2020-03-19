@@ -35,7 +35,7 @@ for li in lines:
     results.append(" ".join(tokens))
     results+=labels
     i+=1
-    if i==4:
+    if i==2:
         print(results)
 
 with open("/data/tanggp/tmp/Starspace/python/test/tag_space_token","w",encoding="utf8") as f:
