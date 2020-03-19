@@ -25,7 +25,7 @@ def per_line(line):
     tokens = [w.strip() for w in tokens if len(w.strip()) > 0 and not w.isdigit()]
     return tokens,labels
 
-with open("/data/tanggp/tmp/Starspace/python/test/tag_space","r",encoding="utf8") as f:
+with open("/data/tanggp/tmp/Starspace/python/test/tag_space2","r",encoding="utf8") as f:
     lines=f.readlines()
 
 results=[]
