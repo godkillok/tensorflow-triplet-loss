@@ -130,7 +130,7 @@ def get_txt_embedding(x_tower,word_embedding,mode):
     return sentence_logit
 
 def model_fn(features, mode,params):
-    vocab_size=2000
+    vocab_size=8092354
     embedding_size=100
     word_embedding = tf.get_variable(name="embeddings", dtype=tf.float32,
                                  shape=[vocab_size , embedding_size],
