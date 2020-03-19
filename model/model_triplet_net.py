@@ -180,7 +180,7 @@ def model_fn(features, mode,params):
     # TODO: some other metrics like rank-1 accuracy?
     # with tf.variable_scope("metrics"):
     #     eval_metric_ops = {"embedding_mean_norm": tf.metrics.mean(embedding_mean_norm)}
-    eval_metric_ops = {"cosine": cosine,"neg":neg}
+    eval_metric_ops = {"cosine": tf.metrics.mean(cosine),"neg":tf.metrics.mean(neg)}
 
     if mode == tf.estimator.ModeKeys.EVAL:
         return tf.estimator.EstimatorSpec(mode, loss=loss, eval_metric_ops=eval_metric_ops)
