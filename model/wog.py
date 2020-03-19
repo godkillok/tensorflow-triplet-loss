@@ -29,10 +29,14 @@ with open("/data/tanggp/tmp/Starspace/python/test/tag_space","r",encoding="utf8"
     lines=f.readlines()
 
 results=[]
+i=0
 for li in lines:
     tokens, labels=per_line(li.strip())
     results.append(" ".join(tokens))
     results+=labels
+    i+=1
+    if i==4:
+        print(results)
 
 with open("/data/tanggp/tmp/Starspace/python/test/tag_space_token","w",encoding="utf8") as f:
     for res in results:
