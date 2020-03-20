@@ -20,9 +20,9 @@ parser.add_argument('--eva_dir', default='/data/tanggp/tmp/Starspace/python/test
                     help="Directory containing the dataset")
 # parser.add_argument('--model_dir', default='C:\work\\tensorflow-triplet-loss\data\\',
 #                     help="Experiment directory containing params.json")
-# parser.add_argument('--data_dir', default='C:\work\\tensorflow-triplet-loss\data\\author_text_cnn_tag_space_750000.tfrecords',
+# parser.add_argument('--data_dir', default='C:\work\\tensorflow-triplet-loss\data\\*.tfrecords',
 #                     help="Directory containing the dataset")
-# parser.add_argument('--eva_dir', default='C:\work\\tensorflow-triplet-loss\data\\author_text_cnn_tag_space_750000.tfrecords',
+# parser.add_argument('--eva_dir', default='C:\work\\tensorflow-triplet-loss\data\\*.tfrecords',
 #                     help="Directory containing the dataset")
 num_parallel_readers=4
 batch_size=128
@@ -34,7 +34,7 @@ def parse_exmp(serialized_example):
             "text": tf.FixedLenFeature([60], tf.int64),
             # {"text": text, "label": label, "author": author, "categories": categories}
              "labels": tf.FixedLenFeature([12], tf.int64),
-            "tags": tf.FixedLenFeature([120], tf.int64)
+            "tags": tf.FixedLenFeature([180], tf.int64)
         })
 
     #labels = feats.pop('label')
@@ -87,8 +87,9 @@ if __name__ == '__main__':
     tf.logging.info("Starting training for {} epoch(s).".format(num_epochs))
     eval_spec = tf.estimator.EvalSpec(input_fn=lambda: train_input_fn(args.eva_dir), throttle_secs=1200)
     train_spec = tf.estimator.TrainSpec(input_fn=lambda: train_input_fn(args.data_dir))
-    tf.estimator.train_and_evaluate(estimator,train_spec,eval_spec)
-
+    #estimator.train(estimator,train_spec,eval_spec)
+    #tf.
+    estimator.train(lambda: train_input_fn(args.data_dir))
     # Evaluate the model on the test set
     # tf.logging.info("Evaluation on test set.")
     # res = estimator.evaluate(lambda: train_input_fn(args.data_dir))
