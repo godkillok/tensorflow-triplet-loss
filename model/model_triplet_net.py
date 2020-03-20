@@ -4,7 +4,8 @@ import tensorflow as tf
 import numpy  as np
 from model.triplet_loss import batch_all_triplet_loss
 from model.triplet_loss import batch_hard_triplet_loss
-
+text_max=60
+tag_max=15
 def random_label(labels_lists):
     rows = tf.shape(labels_lists)[0]
     # Number of zeros on each row
@@ -117,7 +118,7 @@ def  get_tag_embedding(labels_lists,y_tower,word_embedding,mode):
     print("tag {}".format(tags.shape))
     num_filters=3
     filter_sizes=[2,3,4]
-    sentence_max_len=10
+    sentence_max_len=tag_max
     tag_logit=cnn(tags, word_embedding, num_filters, filter_sizes, sentence_max_len,mode)
     return tag_logit,labels
 
@@ -137,7 +138,7 @@ def model_fn(features, mode,params):
                                  initializer=tf.truncated_normal_initializer(stddev=0.02))
 
     y_tower=features["tags"]
-    y_tower=tf.reshape(y_tower,[-1,12,15])
+    y_tower=tf.reshape(y_tower,[-1,12,tag_max])
     labels_lists=features["labels"]
     x_tower=features["text"]
     tag_logit,labels= get_tag_embedding(labels_lists,y_tower,word_embedding,mode)
