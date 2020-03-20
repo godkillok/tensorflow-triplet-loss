@@ -137,7 +137,7 @@ def model_fn(features, mode,params):
                                  initializer=tf.truncated_normal_initializer(stddev=0.02))
 
     y_tower=features["tags"]
-    y_tower=tf.reshape(y_tower,[-1,12,10])
+    y_tower=tf.reshape(y_tower,[-1,12,15])
     labels_lists=features["labels"]
     x_tower=features["text"]
     tag_logit,labels= get_tag_embedding(labels_lists,y_tower,word_embedding,mode)
