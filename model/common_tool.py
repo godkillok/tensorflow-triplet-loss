@@ -57,6 +57,28 @@ def parse_line_dict(tokens,labels,vocab_dict,label_dict,OOV):
     labels=[label_dict.get(lab,-1) for lab in labels]
     # print([text,labels,tags])
     return [text,labels,tags]
+import sentencepiece as spm
+sp = spm.SentencePieceProcessor()
+sp.Load("/data/tanggp/tmp/multi.wiki.bpe.vs320000.model")
+def bpe_dict(tokens,labels,vocab_dict,label_dict,OOV):
+    #text = [vocab_dict.get(r,OOV) for r in tokens]
+    text = sp.EncodeAsIds(" ".join(tokens))
+    # labels=labels[:12]
+    if len(labels) >= 12:
+        labels = labels[0: 12]
+    else:
+        labels += ['-111'] * (12 - len(labels))
+    tags=[]
+    for lab in labels:
+        tag=[]
+        for la in lab.split(' '):
+            # if la not in vocab_dict:
+            #     print("'{}' not exist".format(la))
+            tag.append(sp.EncodeAsIds(la))
+        tags.append(tag)
+    labels=[label_dict.get(lab,-1) for lab in labels]
+    # print([text,labels,tags])
+    return [text,labels,tags]
 
 def line_para(rl,pad_word):
     text = rl[0]
@@ -69,10 +91,10 @@ def line_para(rl,pad_word):
         text += [pad_word] * (sentence_max_len - len(text))
     tags_ = []
     for tag in tags:
-        if len(tag) >= 10:
-            tag = tag[0: 10]
+        if len(tag) >= 15:
+            tag = tag[0: 15]
         else:
-            tag += [pad_word] * (10 - len(tag))
+            tag += [pad_word] * (15 - len(tag))
         tags_ += tag
     g = {"text": text, "labels": label, "tags": tags_}
     return g
