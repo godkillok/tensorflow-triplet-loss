@@ -75,7 +75,7 @@ def per_thouds_lines_dict(result_lines, path_text, count,pad_word,flag_name=''):
 
 
     for rl_num,rl in enumerate(result_lines):
-        g=line_para(rl,pad_word)
+        g=line_para(rl,1)
         tf_lines.append(g)
         # if rl_num>1 and rl_num%10000==0:
         #     flag_name=str(rl_num)
