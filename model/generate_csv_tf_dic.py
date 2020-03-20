@@ -60,7 +60,10 @@ def bpe_dict(tokens,labels,label_dict):
         labels += ['-111'] * (12 - len(labels))
     tags=[]
     for lab in labels:
-        tag=sp.EncodeAsIds(lab)
+        if lab !='-111':
+            tag=sp.EncodeAsIds(lab)
+        else:
+            tag=1
         tags.append(tag)
     labels=[label_dict.get(lab,-1) for lab in labels]
     # print([text,labels,tags])
