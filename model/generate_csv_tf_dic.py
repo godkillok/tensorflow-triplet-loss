@@ -8,7 +8,7 @@ import random
 import random
 import json
 import time
-from common_tool import per_line,parse_line_dict,ini,line_para
+from model.common_tool import per_line,parse_line_dict,ini,line_para
 flags = tf.app.flags
 flags.DEFINE_string("data_dir", "/data/tanggp/tmp/Starspace/python/test/", "Directory containing the dataset")
 flags.DEFINE_string("pad_word", '0', "used for pad sentence")
@@ -47,7 +47,28 @@ def feature_auto(value):
     elif isinstance(value, float):
         return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
 
-
+import sentencepiece as spm
+sp = spm.SentencePieceProcessor()
+sp.Load("/data/tanggp/tmp/multi.wiki.bpe.vs320000.model")
+def bpe_dict(tokens,labels,label_dict):
+    #text = [vocab_dict.get(r,OOV) for r in tokens]
+    text = sp.EncodeAsIds(" ".join(tokens))
+    # labels=labels[:12]
+    if len(labels) >= 12:
+        labels = labels[0: 12]
+    else:
+        labels += ['-111'] * (12 - len(labels))
+    tags=[]
+    for lab in labels:
+        tag=[]
+        for la in lab.split(' '):
+            # if la not in vocab_dict:
+            #     print("'{}' not exist".format(la))
+            tag.append(sp.EncodeAsIds(la))
+        tags.append(tag)
+    labels=[label_dict.get(lab,-1) for lab in labels]
+    # print([text,labels,tags])
+    return [text,labels,tags]
 
 
 def per_thouds_lines_dict(result_lines, path_text, count,pad_word,flag_name=''):
@@ -70,7 +91,8 @@ def per_thouds_lines_dict(result_lines, path_text, count,pad_word,flag_name=''):
 
 def  parse_line_dict2(line,vocab_dict,label_dict):
     tokens, labels=per_line(line)
-    return parse_line_dict(tokens,labels,vocab_dict,label_dict,vocab_dict[FLAGS.OOV])
+    #return parse_line_dict(tokens,labels,vocab_dict,label_dict,vocab_dict[FLAGS.OOV])
+    return bpe_dict(tokens,labels,label_dict)
 
 
 
