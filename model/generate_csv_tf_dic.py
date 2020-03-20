@@ -60,11 +60,7 @@ def bpe_dict(tokens,labels,label_dict):
         labels += ['-111'] * (12 - len(labels))
     tags=[]
     for lab in labels:
-        tag=[]
-        for la in lab.split(' '):
-            # if la not in vocab_dict:
-            #     print("'{}' not exist".format(la))
-            tag.append(sp.EncodeAsIds(la))
+        tag=sp.EncodeAsIds(lab)
         tags.append(tag)
     labels=[label_dict.get(lab,-1) for lab in labels]
     # print([text,labels,tags])
