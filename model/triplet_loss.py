@@ -176,9 +176,14 @@ def batch_all_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fal
     triplet_loss = tf.reduce_sum(triplet_loss) / (num_positive_triplets + 1e-16)
 
     triplet_loss1=-tf.expand_dims(square_norm, 1) +pairwise_dist+0.2
+    labels_equal = tf.equal(tf.expand_dims(labels, 0), tf.expand_dims(labels, 1))
+
+    mask = tf.logical_not(labels_equal)
+    mask = tf.to_float(mask)
+    triplet_loss1 = tf.multiply(mask, triplet_loss1)
     neg=pairwise_dist - tf.matrix_diag(square_norm)
     triplet_loss1 = tf.maximum(triplet_loss1, 0.0)
-
+    triplet_loss1_matix=triplet_loss1
     # triplet_loss1=tf.reduce_max(triplet_loss1,axis=1)
 
     valid_triplets1 = tf.to_float(tf.greater(triplet_loss1, 1e-16))
@@ -187,8 +192,10 @@ def batch_all_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fal
 
     triplet_loss=triplet_loss-0.05*tf.reduce_mean(square_norm)+0.005*tf.reduce_mean(neg)
     cosine=tf.reduce_mean(square_norm)
+    neg_matrix=neg
     neg = tf.reduce_mean(neg)
-    return triplet_loss, fraction_positive_triplets,num_positive_triplets,cosine,neg,pairwise_dist
+
+    return triplet_loss, fraction_positive_triplets,num_positive_triplets,cosine,neg,pairwise_dist,neg_matrix,triplet_loss1_matix
 
 
 def batch_hard_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=False):
