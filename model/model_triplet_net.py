@@ -120,7 +120,7 @@ def  get_tag_embedding(labels_lists,y_tower,word_embedding,mode):
     filter_sizes=[2,3,4]
     sentence_max_len=tag_max
     tag_logit=cnn(tags, word_embedding, num_filters, filter_sizes, sentence_max_len,mode)
-    return tag_logit,labels
+    return tags,tag_logit,labels
 
 def get_txt_embedding(x_tower,word_embedding,mode):
     sentence_max_len=60
@@ -141,7 +141,7 @@ def model_fn(features, mode,params):
     y_tower=tf.reshape(y_tower,[-1,12,tag_max])
     labels_lists=features["labels"]
     x_tower=features["text"]
-    tag_logit,labels= get_tag_embedding(labels_lists,y_tower,word_embedding,mode)
+    selected_tags, tag_logit, labels= get_tag_embedding(labels_lists,y_tower,word_embedding,mode)
     sentence_logit=get_txt_embedding(x_tower, word_embedding,mode)
     sentence_logit = tf.nn.l2_normalize(sentence_logit, dim=1)
     tag_logit = tf.nn.l2_normalize(tag_logit, dim=1)
@@ -167,7 +167,7 @@ def model_fn(features, mode,params):
         loss = batch_hard_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
                                        squared=False)
     if mode == tf.estimator.ModeKeys.PREDICT:
-        predictions = {'sentence_logit': sentence_logit,"tag_logit":tag_logit,"labels":labels,"cosine":cosine,"neg":neg,"pairwise_dist":pairwise_dist}
+        predictions = {'sentence_logit': sentence_logit,"selected_tags":selected_tags,"tag_logit":tag_logit,"labels":labels,"cosine":cosine,"neg":neg,"pairwise_dist":pairwise_dist}
         export_outputs = {
             'prediction': tf.estimator.export.PredictOutput(predictions)
         }
