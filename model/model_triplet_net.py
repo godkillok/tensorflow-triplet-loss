@@ -133,6 +133,7 @@ def get_txt_embedding(x_tower,word_embedding,mode):
 def model_fn(features, mode,params):
     vocab_size=400010
     embedding_size=100
+    print("22222222222" * 8)
     word_embedding = tf.get_variable(name="embeddings", dtype=tf.float32,
                                  shape=[vocab_size , embedding_size],
                                  initializer=tf.truncated_normal_initializer(stddev=0.02))
@@ -167,6 +168,7 @@ def model_fn(features, mode,params):
         loss = batch_hard_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
                                        squared=False)
     if mode == tf.estimator.ModeKeys.PREDICT:
+        print("111111111111111111111111111111111"*8)
         predictions = {'sentence_logit': sentence_logit,"loss":loss,"selected_tags":selected_tags,"tag_logit":tag_logit,"labels111":labels,"cosine":cosine,"neg":neg,"pairwise_dist":pairwise_dist}
         export_outputs = {
             'prediction': tf.estimator.export.PredictOutput(predictions)
