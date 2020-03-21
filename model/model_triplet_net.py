@@ -167,7 +167,7 @@ def model_fn(features, mode,params):
         loss = batch_hard_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
                                        squared=False)
     if mode == tf.estimator.ModeKeys.PREDICT:
-        predictions = {'sentence_logit': sentence_logit,"loss":loss,"selected_tags":selected_tags,"tag_logit":tag_logit,"labels":labels,"cosine":cosine,"neg":neg,"pairwise_dist":pairwise_dist}
+        predictions = {'sentence_logit': sentence_logit,"loss":loss,"selected_tags":selected_tags,"tag_logit":tag_logit,"labels111":labels,"cosine":cosine,"neg":neg,"pairwise_dist":pairwise_dist}
         export_outputs = {
             'prediction': tf.estimator.export.PredictOutput(predictions)
         }
