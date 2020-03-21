@@ -159,7 +159,7 @@ def model_fn(features, mode,params):
     triplet_strategy = "batch_all"
     # Define triplet loss
     if triplet_strategy == "batch_all":
-        loss, fraction,num_positive_triplets,cosine,neg,pairwise_dist = batch_all_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
+        loss, fraction,num_positive_triplets,cosine,neg,pairwise_dist,neg_matrix,triplet_loss1_matix = batch_all_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
                                                 squared=False)
 
 
@@ -171,7 +171,7 @@ def model_fn(features, mode,params):
                                        squared=False)
     if mode == tf.estimator.ModeKeys.PREDICT:
         print("111111111111111111111111111111111"*8)
-        predictions = {'sentence_logit': sentence_logit,"loss":loss,"selected_tags":selected_tags,"tag_logit":tag_logit,"labels111":labels,"cosine":cosine,"neg":neg,"pairwise_dist":pairwise_dist}
+        predictions = {'sentence_logit': sentence_logit,"loss":loss,"selected_tags":selected_tags,"tag_logit":tag_logit,"labels222":labels,"cosine":cosine,"neg":neg,"pairwise_dist":pairwise_dist,"neg_matrix":neg_matrix,"triplet_loss1_matix":triplet_loss1_matix}
         export_outputs = {
             'prediction': tf.estimator.export.PredictOutput(predictions)
         }
