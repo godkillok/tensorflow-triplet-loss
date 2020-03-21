@@ -149,20 +149,14 @@ def model_fn(features, mode,params):
     tf.summary.scalar("embedding_mean_norm", embedding_mean_norm)
 
 
-    if mode == tf.estimator.ModeKeys.PREDICT:
-        predictions = {'sentence_logit': sentence_logit,"tag_logit":tag_logit,"labels":labels}
-        export_outputs = {
-            'prediction': tf.estimator.export.PredictOutput(predictions)
-        }
-        return tf.estimator.EstimatorSpec(
-            mode, predictions=predictions, export_outputs=export_outputs)
+
         # return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
 
     labels = tf.cast(labels, tf.int64)  # Tensor("Cast:0", shape=(?,), dtype=int64)
     triplet_strategy = "batch_all"
     # Define triplet loss
     if triplet_strategy == "batch_all":
-        loss, fraction,num_positive_triplets,cosine,neg = batch_all_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
+        loss, fraction,num_positive_triplets,cosine,neg,pairwise_dist = batch_all_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
                                                 squared=False)
 
 
@@ -172,6 +166,13 @@ def model_fn(features, mode,params):
     else : #triplet_strategy == "batch_hard"
         loss = batch_hard_triplet_loss(labels, sentence_logit,tag_logit, margin=0.05,
                                        squared=False)
+    if mode == tf.estimator.ModeKeys.PREDICT:
+        predictions = {'sentence_logit': sentence_logit,"tag_logit":tag_logit,"labels":labels,"cosine":cosine,"neg":neg,"pairwise_dist":pairwise_dist}
+        export_outputs = {
+            'prediction': tf.estimator.export.PredictOutput(predictions)
+        }
+        return tf.estimator.EstimatorSpec(
+            mode, predictions=predictions, export_outputs=export_outputs)
     # else:
     #     raise ValueError("Triplet strategy not recognized: {}".format(params.triplet_strategy))
 
