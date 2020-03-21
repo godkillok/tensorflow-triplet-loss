@@ -116,7 +116,6 @@ def cnn(sentence,embeddings,num_filters,filter_sizes,sentence_max_len,mode):
 
 def  get_tag_embedding(labels_lists,y_tower,word_embedding,mode):
     tags,labels=random_tag(labels_lists,y_tower)
-    labels=labels_lists
     print("tag {}".format(tags.shape))
     num_filters=3
     filter_sizes=[2,3,4]
@@ -147,7 +146,7 @@ def model_fn(features, mode,params):
     selected_tags, tag_logit, labels= get_tag_embedding(labels_lists,y_tower,word_embedding,mode)
     sentence_logit=get_txt_embedding(x_tower, word_embedding,mode)
     sentence_logit = tf.nn.l2_normalize(sentence_logit, dim=1)
-    print("tag_logit shape {}".format(tag_logit.shape))
+    print("tag_logit shape {} labels ".format(tag_logit.shape,labels.shape))
     tag_logit = tf.nn.l2_normalize(tag_logit, dim=1)
     print("tag_logit2 shape {}".format(tag_logit.shape))
     embedding_mean_norm = tf.reduce_mean(tf.norm(sentence_logit, axis=1))
