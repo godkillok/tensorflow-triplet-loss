@@ -147,8 +147,9 @@ def model_fn(features, mode,params):
     selected_tags, tag_logit, labels= get_tag_embedding(labels_lists,y_tower,word_embedding,mode)
     sentence_logit=get_txt_embedding(x_tower, word_embedding,mode)
     sentence_logit = tf.nn.l2_normalize(sentence_logit, dim=1)
-    print("tag_logit shape".format(tag_logit.shape))
+    print("tag_logit shape {}".format(tag_logit.shape))
     tag_logit = tf.nn.l2_normalize(tag_logit, dim=1)
+    print("tag_logit2 shape {}".format(tag_logit.shape))
     embedding_mean_norm = tf.reduce_mean(tf.norm(sentence_logit, axis=1))
     tf.summary.scalar("embedding_mean_norm", embedding_mean_norm)
 
