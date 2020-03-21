@@ -175,7 +175,7 @@ def batch_all_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fal
     # Get final mean triplet loss over the positive valid triplets
     triplet_loss = tf.reduce_sum(triplet_loss) / (num_positive_triplets + 1e-16)
 
-    triplet_loss1=-tf.expand_dims(square_norm, 1) +pairwise_dist+0.2
+    triplet_loss1=-tf.expand_dims(square_norm, 1) +pairwise_dist+0.5
     labels_equal = tf.equal(tf.expand_dims(labels, 0), tf.expand_dims(labels, 1))
 
     mask = tf.logical_not(labels_equal)
