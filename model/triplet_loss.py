@@ -20,7 +20,7 @@ def _pairwise_distances(embeddings_a,embedding_b, squared=False):
     embedding_b = tf.nn.l2_normalize(embedding_b, dim=1)
     dot_product = tf.matmul(embeddings_a, tf.transpose(embedding_b))
     #dot_product1 = tf.matmul(embeddings_a1, tf.transpose(embedding_b1))
-    tf.summary.histogram('dot_product', dot_product)
+
     # Get squared L2 norm for each embedding. We can just take the diagonal of `dot_product`.
     # This also provides more numerical stability (the diagonal of the result will be exactly 0).
     # shape (batch_size,)
@@ -30,10 +30,10 @@ def _pairwise_distances(embeddings_a,embedding_b, squared=False):
     # # Compute the pairwise distance matrix as we have:
     # # ||a - b||^2 = ||a||^2  - 2 <a, b> + ||b||^2
     # # shape (batch_size, batch_size)
-    # distances = tf.expand_dims(square_norm, 1) - 2.0 * dot_product + tf.expand_dims(square_norm, 0)
+    distances = tf.expand_dims(square_norm, 1) - 2.0 * dot_product + tf.expand_dims(square_norm, 0)
     #
     # # Because of computation errors, some distances might be negative so we put everything >= 0.0
-    # distances = tf.maximum(distances, 0.0)
+    distances = tf.maximum(distances, 0.0)
     # tf.summary.histogram('distances', distances)
     # if not squared:
     #     # Because the gradient of sqrt is infinite when distances == 0.0 (ex: on the diagonal)
@@ -47,7 +47,7 @@ def _pairwise_distances(embeddings_a,embedding_b, squared=False):
     #     distances = distances * (1.0 - mask)
     # distances =1-dot_product
 
-    return dot_product,square_norm
+    return distances,square_norm
 
 
 def _get_anchor_positive_triplet_mask(labels):
@@ -175,7 +175,7 @@ def batch_all_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fal
     # Get final mean triplet loss over the positive valid triplets
     triplet_loss = tf.reduce_sum(triplet_loss) / (num_positive_triplets + 1e-16)
 
-    triplet_loss1=-tf.expand_dims(square_norm, 1) +pairwise_dist+0.2
+    triplet_loss1=tf.expand_dims(square_norm, 1) -pairwise_dist+0.2
     labels_equal = tf.equal(tf.expand_dims(labels, 0), tf.expand_dims(labels, 1))
 
     mask = tf.logical_not(labels_equal)
@@ -189,10 +189,13 @@ def batch_all_triplet_loss(labels, embeddings_a,embedding_b, margin, squared=Fal
     valid_triplets1 = tf.to_float(tf.greater(triplet_loss1, 1e-16))
     num_positive_triplets1 = tf.reduce_sum(valid_triplets1)
     triplet_loss=tf.reduce_sum(triplet_loss1) / (num_positive_triplets1 + 1e-16)
+    tf.summary.histogram('triplet_loss', triplet_loss)
+    tf.summary.histogram('square_norm', tf.reduce_mean(square_norm))
 
-    triplet_loss=triplet_loss-0.05*tf.reduce_mean(square_norm)+0.005*tf.reduce_mean(neg)
+    #triplet_loss=triplet_loss-0.05*tf.reduce_mean(square_norm)+0.005*tf.reduce_mean(neg)
     cosine=tf.reduce_mean(square_norm)
     neg_matrix=neg
+    tf.summary.histogram('neg_matrix', neg_matrix)
     neg = tf.reduce_mean(neg)
 
     return triplet_loss, fraction_positive_triplets,num_positive_triplets,cosine,neg,pairwise_dist,neg_matrix,triplet_loss1_matix
