@@ -25,8 +25,9 @@ def random_tag(labels_lists,tags_list):
     print("tags_list {}".format(tags_list))
     labels=random_label(labels_lists)
     rows = tf.shape(labels_lists)[0]
-    result=tf.gather_nd(tags_list, tf.stack([tf.range(rows), labels], axis=1))
-    return result,labels
+    tags=tf.gather_nd(tags_list, tf.stack([tf.range(rows), labels], axis=1))
+    labels2 = tf.gather_nd(labels_lists, tf.stack([tf.range(rows), labels], axis=1))
+    return tags,labels2
 
 def assign_pretrained_word_embedding(params):
     # print("using pre-trained word emebedding.started.word2vec_model_path:",fast_text)
@@ -115,6 +116,7 @@ def cnn(sentence,embeddings,num_filters,filter_sizes,sentence_max_len,mode):
 
 def  get_tag_embedding(labels_lists,y_tower,word_embedding,mode):
     tags,labels=random_tag(labels_lists,y_tower)
+    labels=labels_lists
     print("tag {}".format(tags.shape))
     num_filters=3
     filter_sizes=[2,3,4]
